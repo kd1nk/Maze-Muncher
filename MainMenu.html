@@ -4,122 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maze Muncher</title>
-  <style>
-    /* Import Google fonts for titles and text */
-    @import url('https://fonts.googleapis.com/css2?family=Chewy&family=Lobster&display=swap');
+  <link rel="stylesheet" href="style.css">
 
-    body {
-      margin: 0;
-      font-family: 'Chewy', cursive; /* Use 'Chewy' font for general text */
-      overflow: hidden; /* Prevent scrollbars */
-      background: linear-gradient(180deg, #87ceeb, #f9f0c2); /* Gradient background */
-    }
-
-    .container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center; 
-      overflow: hidden; /* Hide content that overflows the container */
-      background: url('Cornfield.webp') no-repeat center center/cover;
-    }
-
-    .menu {
-      background-color: rgba(255, 250, 240, 0.95); /* Semi-transparent off-white background */
-      padding: 3rem;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add a shadow effect */
-      animation: slideIn 1.5s ease-out; /* Slide-in animation */
-      max-width: 400px; /* Set a maximum width for the menu */
-      border: 3px solid #deb887;
-    }
-
-    .menu h1 {
-      font-size: 4rem;
-      color: #6b4226; /* Dark brown color */
-      font-family: 'Lobster', cursive; /* Use 'Lobster' font for the title */
-      margin-bottom: 1rem;
-      text-shadow: 3px 3px #ffe4b5; /* Add a text shadow */
-    }
-
-    .menu button {
-      display: block; /* Make buttons stack vertically */
-      width: 280px;
-      padding: 1rem;
-      margin: 1rem auto; /* Center the buttons */
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #ffb347, #ffcc33); /* Gradient background for buttons */
-      color: #fff; /* White text */
-      font-size: 1.5rem;
-      cursor: pointer; /* Change cursor on hover */
-      transition: transform 0.3s, box-shadow 0.3s, background 0.3s; /* Smooth transitions */
-      font-family: 'Chewy', cursive; /* Use 'Chewy' font for button text */
-    }
-
-    .menu button:hover {
-      transform: translateY(-6px); /* Move slightly up on hover */
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
-      background: linear-gradient(90deg, #ffcc33, #ffa347); /* Change gradient on hover */
-    }
-
-    .menu button:active {
-      transform: translateY(2px); /* Move slightly down on click */
-    }
-
-    .menu-footer {
-      margin-top: 1.5rem;
-      font-size: 1.3rem;
-      color: #6b4226;
-      font-family: 'Lobster', cursive;
-    }
-
-    .fence {
-      position: absolute;
-      bottom: -2%;
-      left: 0;
-      width: 100%;
-      height: 150px;
-      background: url('Fence2.png') repeat-x; /* Repeating fence image */
-    }
-
-    .credits-button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: rgba(255, 250, 240, 0.7); /* Semi-transparent background */
-      color: #6b4226;
-      font-size: 1rem;
-      cursor: pointer;
-      font-family: 'Chewy', cursive;
-      transition: background-color 0.3s; /* Smooth transition for background color */
-    }
-
-    .credits-button:hover {
-      background-color: rgba(255, 250, 240, 0.9); /* Slightly less transparent on hover */
-    }
-
-    /* Keyframe animations */
-    @keyframes slideIn {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes floatUp {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-  </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="mainMenuContainer">
     <button class="credits-button" onclick="viewCredits()">Credits</button>
     <div class="menu">
       <h1>Maze Muncher</h1>
@@ -128,16 +17,31 @@
       <button onclick="viewLeaderboard()">Leaderboard</button>
       <button onclick="exitGame()">Exit Game</button>
     </div>
+<<<<<<< Updated upstream
   	<div class="fence"></div> </div>
+=======
 
-  <script>
-    /**
-     * Starts the game. Currently displays an alert.
-     */
-    function startGame() {
-      alert('Starting the game...');
-    }
+    <div id="settingsScreen" class="menu" style="display: none;">
+      <h1>Settings</h1>
+      <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
+      <button onclick="accessibilityMenu()">Accessibility Options</button>
+      <button onclick="goBack()">Back</button>
+    </div>
 
+    <div id="volumeScreen" class="menu" style="display: none;">
+      <h1>Volume</h1>
+      <label for="volume">Volume:</label>
+      <input type="range" id="volume" min="0" max="100">
+      <button onclick="goBack()">Back</button>
+    </div>
+
+  </div>
+  <div class="fence"></div> </div>
+>>>>>>> Stashed changes
+
+    <script src="mainMenu.js"></script>
+
+<<<<<<< Updated upstream
     /**
      * Displays the settings menu. Currently displays an alert.
      */
@@ -167,5 +71,7 @@
       alert('Credits:\nDeveloped by Dawsyn Birtell, Hope Walton, Kacy Dinkel, Kyle Cassity.');
     }
   </script>
+=======
+>>>>>>> Stashed changes
 </body>
 </html>
