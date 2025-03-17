@@ -174,6 +174,36 @@ class Pacman extends Phaser.Scene {
       frameWidth:32,frameHeight:32
     });
 
+    //Enter Farm Boy
+    this.load.spritesheet("Farm boy0","assets/Farm boy/Farm boy-0.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy1","assets/Farm boy/Farm boy-1.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy2","assets/Farm boy/Farm boy-2.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy3","assets/Farm boy/Farm boy-3.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy4","assets/Farm boy/Farm boy-4.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy5","assets/Farm boy/Farm boy-5.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy6","assets/Farm boy/Farm boy-6.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy7","assets/Farm boy/Farm boy-7.png",{
+      frameWidth:32,frameHeight:32
+    });
+    this.load.spritesheet("Farm boy8","assets/Farm boy/Farm boy-8.png",{
+      frameWidth:32,frameHeight:32
+    });
+
+
     this.load.spritesheet("pacmanDeath1","assets/pac man & life counter & death/pac man death/spr_pacdeath_0.png",{
       frameWidth:32,frameHeight:32
     });
@@ -215,8 +245,8 @@ class Pacman extends Phaser.Scene {
     const tileset = this.map.addTilesetImage("pacman tileset");
     const layer = this.map.createLayer("Tile Layer 1",[tileset]);
     layer.setCollisionByExclusion(-1,true);
-    this.pacman = this.physics.add.sprite(230,432,"pacman");
-    this.anims.create({
+    this.pacman = this.physics.add.sprite(230,432,"Farm boy0");
+/*     this.anims.create({
       key:"pacmanAnim",
       frames: [
         {key:"pacman"},
@@ -225,10 +255,71 @@ class Pacman extends Phaser.Scene {
         {key:"pacman3"},
         {key:"pacman4"},
       ],
+      frames: [
+        {key:"Farm boy0"},
+        {key:"Farm boy1"},
+        {key:"Farm boy2"},
+        {key:"Farm boy3"},
+        {key:"Farm boy4"},
+        {key:"Farm boy5"},
+        {key:"Farm boy6"},
+        {key:"Farm boy7"},
+        {key:"Farm boy8"},
+      ],
       frameRate:10,
       repeat:-1,
+    }); */
+
+   this.anims.create({
+      key:"neutral",
+      frames: [
+        {key:"Farm boy0"},
+      ],
+      frameRate:10
     });
-    this.pacman.play("pacmanAnim");
+
+    this.anims.create({
+      key:"walk-right",
+      frames: [
+        {key:"Farm boy1"},
+        {key:"Farm boy2"},
+      ],
+      frameRate:7,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key:"walk-left",
+      frames: [
+        {key:"Farm boy3"},
+        {key:"Farm boy4"},
+      ],
+      frameRate:7,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key:"walk-down",
+      frames: [
+        {key:"Farm boy5"},
+        {key:"Farm boy6"},
+      ],
+      frameRate:7,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key:"walk-up",
+      frames: [
+        {key:"Farm boy7"},
+        {key:"Farm boy8"},
+      ],
+      frameRate:7,
+      repeat: -1
+    }); 
+
+
+    //this.pacman.play("farmBoyNuetral");
 
     this.anims.create({
       key: "pacmanDeath",
@@ -663,7 +754,7 @@ respawnGhost(ghost) {
     }
   }
   
-  handleDirectionInput() {
+/*   handleDirectionInput() {
     const arrowKeys = ["left","right","up","down"];
     for (const key of arrowKeys) {
       if((this.cursors[key].isDown && this.direction!== key) || (this.hasRespawned)) {
@@ -675,10 +766,29 @@ respawnGhost(ghost) {
         this.nextIntersection = this.getNextIntersectionInNextDirection(
           this.pacman.x,this.pacman.y,this.previousDirection,key
         );
+
+        this.pacman.play(key, true);
         break;
       }
     }
-  }
+  } */
+
+    handleDirectionInput() {
+      const arrowKeys = ["left","right","up","down"];
+      for (const key of arrowKeys) {
+        if((this.cursors[key].isDown && this.direction!== key) || (this.hasRespawned)) {
+          if(this.hasRespawned)
+            this.hasRespawned = !this.hasRespawned;
+    
+          this.previousDirection = this.direction;
+          this.direction = key;
+          this.nextIntersection = this.getNextIntersectionInNextDirection(
+            this.pacman.x,this.pacman.y,this.previousDirection,key
+          );
+          break;
+        }
+      }
+    }
 
   getNextIntersectionInNextDirection(currentX,currentY,currentDirection,nextDirection) {
     let filteredIntersections;
@@ -720,27 +830,78 @@ respawnGhost(ghost) {
   }
 
   handlePacmanMovement() {
-    let nextIntersectionx =null;
-    let nextIntersectiony =null;
-    if(this.nextIntersection) {
+    let nextIntersectionx = null;
+    let nextIntersectiony = null;
+    if (this.nextIntersection) {
       nextIntersectionx = this.nextIntersection.x;
       nextIntersectiony = this.nextIntersection.y;
     }
-    switch(this.direction) {
+  
+    // Check if we're actually moving in the intended direction
+    const isMovingRight = this.pacman.body.velocity.x > 0;
+    const isMovingLeft = this.pacman.body.velocity.x < 0;
+    const isMovingUp = this.pacman.body.velocity.y < 0;
+    const isMovingDown = this.pacman.body.velocity.y > 0;
+  
+    switch (this.direction) {
       case "left":
-        this.handleMovementInDirection("left","right",this.pacman.y,nextIntersectiony,this.pacman.x,true,false,0,-this.speed,0,this.pacman.body.velocity.y);
+        this.handleMovementInDirection(
+          "left", "right", this.pacman.y, nextIntersectiony, this.pacman.x,
+          true, false, 0, -this.speed, 0, this.pacman.body.velocity.y
+        );
+        // Only change animation if we're actually moving left
+        if (isMovingLeft) {
+          this.pacman.play("walk-left", true);
+        }
         break;
-       case "right":
-          this.handleMovementInDirection("right","left",this.pacman.y,nextIntersectiony,this.pacman.x,true,false,180,this.speed,0,this.pacman.body.velocity.y);
-          break;  
-        case "up":
-          this.handleMovementInDirection("up","down",this.pacman.x,nextIntersectionx,this.pacman.y,false,true,-90,0,-this.speed,this.pacman.body.velocity.x);
-          break;    
-        case "down":
-        this.handleMovementInDirection("down","up",this.pacman.x,nextIntersectionx,this.pacman.y,false,true,90,0,this.speed,this.pacman.body.velocity.x);
-        break;        
+      case "right":
+        this.handleMovementInDirection(
+          "right", "left", this.pacman.y, nextIntersectiony, this.pacman.x,
+          true, false, 180, this.speed, 0, this.pacman.body.velocity.y
+        );
+        // Only change animation if we're actually moving right
+        if (isMovingRight) {
+          this.pacman.play("walk-right", true);
+        }
+        break;
+      case "up":
+        this.handleMovementInDirection(
+          "up", "down", this.pacman.x, nextIntersectionx, this.pacman.y,
+          false, true, -90, 0, -this.speed, this.pacman.body.velocity.x
+        );
+        // Only change animation if we're actually moving up
+        if (isMovingUp) {
+          this.pacman.play("walk-up", true);
+        }
+        break;
+      case "down":
+        this.handleMovementInDirection(
+          "down", "up", this.pacman.x, nextIntersectionx, this.pacman.y,
+          false, true, 90, 0, this.speed, this.pacman.body.velocity.x
+        );
+        // Only change animation if we're actually moving down
+        if (isMovingDown) {
+          this.pacman.play("walk-down", true);
+        }
+        break;
+      default:
+        this.pacman.setVelocity(0, 0);
+        if (!this.pacman.anims.isPlaying || this.pacman.anims.currentAnim.key !== "neutral") {
+          this.pacman.play("neutral", true);
+        }
+        break;
+    }
+    
+    // If we're not moving in any direction, play the neutral animation
+    if (!isMovingRight && !isMovingLeft && !isMovingUp && !isMovingDown && 
+        (!this.pacman.anims.isPlaying || this.pacman.anims.currentAnim.key !== "neutral")) {
+      this.pacman.play("neutral", true);
     }
   }
+
+
+    
+  
   handleMovementInDirection(currentDirection,oppositeDirection,pacmanPosition,intersectionPosition,movingCoordinate,flipX,flipY,angle,velocityX,velocityY,currentVelocity) {
     let perpendicularDirection = currentDirection === "left" || currentDirection ==="right" ? ["up","down"] : ["left","right"];
     let condition =false;
@@ -775,10 +936,6 @@ respawnGhost(ghost) {
   }
  
   changeDirection(flipX,flipY,angle,velocityX,velocityY) {
-
-    this.pacman.setFlipX(flipX);
-    this.pacman.setFlipY(flipY);
-    this.pacman.setAngle(angle);
     this.pacman.setVelocityY(velocityY);
     this.pacman.setVelocityX(velocityX);
   }
@@ -962,7 +1119,7 @@ getPerpendicularDirection(direction) {
 }
 
 isMovingInxDirection(direction) {
-  let result =  (direction === "left" ||direction === "right" ) ? true : false;
+  let result =  (direction === "left" || direction === "right" ) ? true : false;
   return result;
 }
 
@@ -985,3 +1142,4 @@ isMovingInxDirection(direction) {
   scene: Pacman,
  };
  const game = new Phaser.Game(config);
+ 
