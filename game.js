@@ -1,3 +1,5 @@
+import * as Movement from "./src/controllers/characterMovement.js";
+
 class Pacman extends Phaser.Scene {
   constructor() {
     super();
@@ -45,7 +47,7 @@ class Pacman extends Phaser.Scene {
     },duration);
   }
 
-  switchMode() {
+/*   switchMode() {
    if(this.currentMode === "scared") {
     this.currentMode = this.previouseMode || "scatter";
     this.setModeTimer(this[this.currentMode+"ModeDuration"]);
@@ -71,7 +73,7 @@ class Pacman extends Phaser.Scene {
       });
       this.previouseMode = this.currentMode;
    }
-}
+} */
   
   getChaseTarget(ghost) {
     //let chaseTarget = null;
@@ -156,23 +158,10 @@ class Pacman extends Phaser.Scene {
   }
 
   preload() {
+
+    // Load tilemap and tileset asset
     this.load.image("pacman tileset","assets/pac man tiles/tileset.png");
     this.load.tilemapTiledJSON("map","assets/pacman-map.json");
-    this.load.spritesheet("pacman","assets/pacman characters/pacman/pacman0.png",{
-      frameWidth:32,frameHeight:32
-    });
-    this.load.spritesheet("pacman1","assets/pacman characters/pacman/pacman1.png",{
-      frameWidth:32,frameHeight:32
-    });
-    this.load.spritesheet("pacman2","assets/pacman characters/pacman/pacman2.png",{
-      frameWidth:32,frameHeight:32
-    });
-    this.load.spritesheet("pacman3","assets/pacman characters/pacman/pacman3.png",{
-      frameWidth:32,frameHeight:32
-    });
-    this.load.spritesheet("pacman4","assets/pacman characters/pacman/pacman4.png",{
-      frameWidth:32,frameHeight:32
-    });
 
     //Enter Farm Boy
     this.load.spritesheet("Farm boy0","assets/Farm boy/Farm boy-0.png",{
@@ -204,6 +193,7 @@ class Pacman extends Phaser.Scene {
     });
 
 
+    //Death Animation
     this.load.spritesheet("pacmanDeath1","assets/pac man & life counter & death/pac man death/spr_pacdeath_0.png",{
       frameWidth:32,frameHeight:32
     });
@@ -214,6 +204,8 @@ class Pacman extends Phaser.Scene {
       frameWidth:32,frameHeight:32
     });
 
+
+    // Pellets|Power Pellets
     this.load.image("dot","assets/pacman items/dot.png");
     this.load.image("powerPill","assets/pacman items/spr_power_pill_0.png");
 
@@ -237,8 +229,6 @@ class Pacman extends Phaser.Scene {
       frameWidth:32,frameHeight:32
     });
     this.load.image("endGameImage","assets/pac man text/spr_message_2.png");
-    this.load.image("lifeCounter1","assets/pac man & life counter & death/pac man life counter/spr_lifecounter_0.png");
-    this.load.image("lifeCounter2","assets/pac man & life counter & death/pac man life counter/spr_lifecounter_0.png");
   }
   create() {
     this.map = this.make.tilemap({key:"map"});
@@ -246,29 +236,6 @@ class Pacman extends Phaser.Scene {
     const layer = this.map.createLayer("Tile Layer 1",[tileset]);
     layer.setCollisionByExclusion(-1,true);
     this.pacman = this.physics.add.sprite(230,432,"Farm boy0");
-/*     this.anims.create({
-      key:"pacmanAnim",
-      frames: [
-        {key:"pacman"},
-        {key:"pacman1"},
-        {key:"pacman2"},
-        {key:"pacman3"},
-        {key:"pacman4"},
-      ],
-      frames: [
-        {key:"Farm boy0"},
-        {key:"Farm boy1"},
-        {key:"Farm boy2"},
-        {key:"Farm boy3"},
-        {key:"Farm boy4"},
-        {key:"Farm boy5"},
-        {key:"Farm boy6"},
-        {key:"Farm boy7"},
-        {key:"Farm boy8"},
-      ],
-      frameRate:10,
-      repeat:-1,
-    }); */
 
    this.anims.create({
       key:"neutral",
@@ -319,8 +286,6 @@ class Pacman extends Phaser.Scene {
     }); 
 
 
-    //this.pacman.play("farmBoyNuetral");
-
     this.anims.create({
       key: "pacmanDeath",
       frames: [
@@ -360,8 +325,8 @@ class Pacman extends Phaser.Scene {
     this.ghosts.forEach(ghost => {
       this.physics.add.overlap(this.pacman,ghost,this.handlePacmanGhostCollision,null,this);
     });
-      this.lifeCounter1 = this.add.image(32,32,"lifeCounter1");
-      this.lifeCounter2 = this.add.image(56,32,"lifeCounter2");
+      this.lifeCounter1 = this.add.image(32,32,"Farm boy0");
+      this.lifeCounter2 = this.add.image(56,32,"Farm boy0");
     }
 
   initializeGhosts(layer) {
@@ -733,9 +698,11 @@ respawnGhost(ghost) {
   update() {
     if(!this.isPacmanAlive || this.lives === 0)
       return;
-    this.handleDirectionInput();
-    this.handlePacmanMovement();
-    this.teleportPacmanAcrossWorldBounds();
+
+    Movement.handleDirectionInput.call(this);
+    Movement.handlePacmanMovement.call(this);
+    Movement.teleportPacmanAcrossWorldBounds.call(this);
+
     if(this.pinkGhost.enteredMaze) {
      this.handleGhostDirection(this.pinkGhost);
      this.handleGhostMovement(this.pinkGhost);
@@ -753,205 +720,7 @@ respawnGhost(ghost) {
       this.handleGhostMovement(this.redGhost);
     }
   }
-  
-/*   handleDirectionInput() {
-    const arrowKeys = ["left","right","up","down"];
-    for (const key of arrowKeys) {
-      if((this.cursors[key].isDown && this.direction!== key) || (this.hasRespawned)) {
-        if(this.hasRespawned)
-          this.hasRespawned = !this.hasRespawned;
-
-        this.previousDirection = this.direction;
-        this.direction = key;
-        this.nextIntersection = this.getNextIntersectionInNextDirection(
-          this.pacman.x,this.pacman.y,this.previousDirection,key
-        );
-
-        this.pacman.play(key, true);
-        break;
-      }
-    }
-  } */
-
-    handleDirectionInput() {
-      const arrowKeys = ["left","right","up","down"];
-      for (const key of arrowKeys) {
-        if((this.cursors[key].isDown && this.direction!== key) || (this.hasRespawned)) {
-          if(this.hasRespawned)
-            this.hasRespawned = !this.hasRespawned;
     
-          this.previousDirection = this.direction;
-          this.direction = key;
-          this.nextIntersection = this.getNextIntersectionInNextDirection(
-            this.pacman.x,this.pacman.y,this.previousDirection,key
-          );
-          break;
-        }
-      }
-    }
-
-  getNextIntersectionInNextDirection(currentX,currentY,currentDirection,nextDirection) {
-    let filteredIntersections;
-    const isUp = currentDirection === "up";
-    const isDown = currentDirection === "down";
-    const isLeft = currentDirection === "left";
-    const isRight = currentDirection === "right";
-    filteredIntersections = this.intersections.filter((intersection)=>{
-      return(
-        ((isUp && intersection.x === currentX && intersection.y <= currentY) ||
-      (isDown && intersection.x === currentX && intersection.y>=currentY) ||
-      (isLeft && intersection.y === currentY && intersection.x<=currentX) ||
-    (isRight && intersection.y === currentY && intersection.x >= currentX)) &&
-        this.isIntersectionInDirection(intersection,nextDirection)
-      );
-    })
-    .sort((a,b)=>{
-      if(isUp || isDown) {
-        return isUp ? b.y-a.y : a.y-b.y;
-      } else {
-        return isLeft ? b.x - a.x : a.x-b.x;
-      }
-    });
-    return filteredIntersections ? filteredIntersections[0]:null;
-  }
-  isIntersectionInDirection(intersection,direction) {
-    switch(direction) {
-      case "up":
-        return intersection.openPaths.includes("up");
-      case "down":
-        return intersection.openPaths.includes("down");
-      case "left":
-        return intersection.openPaths.includes("left");
-      case "right":
-        return intersection.openPaths.includes("right");  
-      default:
-        return false;
-    }
-  }
-
-  handlePacmanMovement() {
-    let nextIntersectionx = null;
-    let nextIntersectiony = null;
-    if (this.nextIntersection) {
-      nextIntersectionx = this.nextIntersection.x;
-      nextIntersectiony = this.nextIntersection.y;
-    }
-  
-    // Check if we're actually moving in the intended direction
-    const isMovingRight = this.pacman.body.velocity.x > 0;
-    const isMovingLeft = this.pacman.body.velocity.x < 0;
-    const isMovingUp = this.pacman.body.velocity.y < 0;
-    const isMovingDown = this.pacman.body.velocity.y > 0;
-  
-    switch (this.direction) {
-      case "left":
-        this.handleMovementInDirection(
-          "left", "right", this.pacman.y, nextIntersectiony, this.pacman.x,
-          true, false, 0, -this.speed, 0, this.pacman.body.velocity.y
-        );
-        // Only change animation if we're actually moving left
-        if (isMovingLeft) {
-          this.pacman.play("walk-left", true);
-        }
-        break;
-      case "right":
-        this.handleMovementInDirection(
-          "right", "left", this.pacman.y, nextIntersectiony, this.pacman.x,
-          true, false, 180, this.speed, 0, this.pacman.body.velocity.y
-        );
-        // Only change animation if we're actually moving right
-        if (isMovingRight) {
-          this.pacman.play("walk-right", true);
-        }
-        break;
-      case "up":
-        this.handleMovementInDirection(
-          "up", "down", this.pacman.x, nextIntersectionx, this.pacman.y,
-          false, true, -90, 0, -this.speed, this.pacman.body.velocity.x
-        );
-        // Only change animation if we're actually moving up
-        if (isMovingUp) {
-          this.pacman.play("walk-up", true);
-        }
-        break;
-      case "down":
-        this.handleMovementInDirection(
-          "down", "up", this.pacman.x, nextIntersectionx, this.pacman.y,
-          false, true, 90, 0, this.speed, this.pacman.body.velocity.x
-        );
-        // Only change animation if we're actually moving down
-        if (isMovingDown) {
-          this.pacman.play("walk-down", true);
-        }
-        break;
-      default:
-        this.pacman.setVelocity(0, 0);
-        if (!this.pacman.anims.isPlaying || this.pacman.anims.currentAnim.key !== "neutral") {
-          this.pacman.play("neutral", true);
-        }
-        break;
-    }
-    
-    // If we're not moving in any direction, play the neutral animation
-    if (!isMovingRight && !isMovingLeft && !isMovingUp && !isMovingDown && 
-        (!this.pacman.anims.isPlaying || this.pacman.anims.currentAnim.key !== "neutral")) {
-      this.pacman.play("neutral", true);
-    }
-  }
-
-
-    
-  
-  handleMovementInDirection(currentDirection,oppositeDirection,pacmanPosition,intersectionPosition,movingCoordinate,flipX,flipY,angle,velocityX,velocityY,currentVelocity) {
-    let perpendicularDirection = currentDirection === "left" || currentDirection ==="right" ? ["up","down"] : ["left","right"];
-    let condition =false;
-    if(this.nextIntersection )
-      condition = (this.previousDirection == perpendicularDirection[0] && pacmanPosition <=intersectionPosition) || (this.previousDirection == perpendicularDirection[1] && pacmanPosition >= intersectionPosition) ||
-      this.previousDirection === oppositeDirection;
-      if(condition) {
-        let newPosition = intersectionPosition;
-        if(this.previousDirection != oppositeDirection && newPosition !== pacmanPosition) {
-          if(currentDirection === "left" || currentDirection === "right")
-            this.pacman.body.reset(movingCoordinate,newPosition);
-          else this.pacman.body.reset(newPosition,movingCoordinate);
-        }
-        this.changeDirection(flipX,flipY,angle,velocityX,velocityY);
-        this.adjustPacmanPosition(velocityX,velocityY);
-      
-      } 
-      else if (currentVelocity ===0 ) {
-        this.changeDirection(flipX,flipY,angle,velocityX,velocityY);
-        this.adjustPacmanPosition(velocityX,velocityY);
-      }
-  }
-  adjustPacmanPosition(velocityX,velocityY) {
-    if(this.pacman.x%this.blockSize !==0 && velocityY>0) {
-      let nearestMultiple = Math.round(this.pacman.x/this.blockSize)*this.blockSize;
-      this.pacman.body.reset(nearestMultiple,this.pacman.y);
-    }
-    if(this.pacman.y%this.blockSize !==0 && velocityX>0) {
-      let nearestMultiple = Math.round(this.pacman.y/this.blockSize)* this.blockSize;
-      this.pacman.body.reset(this.pacman.x,nearestMultiple);
-    }
-  }
- 
-  changeDirection(flipX,flipY,angle,velocityX,velocityY) {
-    this.pacman.setVelocityY(velocityY);
-    this.pacman.setVelocityX(velocityX);
-  }
-  teleportPacmanAcrossWorldBounds() {
-    const worldBounds = this.physics.world.bounds;
-    if(this.pacman.x <= worldBounds.x) {
-      this.pacman.body.reset(worldBounds.right - this.blockSize,this.pacman.y);
-      this.nextIntersection = this.getNextIntersectionInNextDirection(this.pacman.x,this.pacman.y,"left",this.direction);
-      this.pacman.setVelocityX(-1*this.speed);
-    }
-    if(this.pacman.x>=worldBounds.right) {
-      this.pacman.body.reset(worldBounds.x+this.blockSize,this.pacman.y);
-      this.nextIntersection = this.getNextIntersectionInNextDirection(this.pacman.x,this.pacman.y,"right",this.direction);
-      this.pacman.setVelocityX(this.speed);
-    }
-  }
 
   handleGhostDirection(ghost) {
     if(this.isInghostHouse(ghost.x,ghost.y)){
@@ -1142,4 +911,6 @@ isMovingInxDirection(direction) {
   scene: Pacman,
  };
  const game = new Phaser.Game(config);
+ 
+
  
