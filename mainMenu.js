@@ -22,6 +22,12 @@ function volumeScreen() {
     previousScreen = "settingsScreen"; // Came from the settings menu //
 }
 
+function accessibilityMenu() {
+    document.getElementById("settingsScreen").style.display = "none";
+    document.getElementById("accessibilityScreen").style.display = "block";
+    previousScreen = "settingsScreen"; // Came from the settings menu //
+}
+
 // Takes us back to previous screen //
 function goBack() {
     if (previousScreen === "mainMenu") {
@@ -29,7 +35,7 @@ function goBack() {
         document.getElementById("mainMenu").style.display = "block";
         document.getElementById("settingsScreen").style.display = "none";
         document.getElementById("volumeScreen").style.display = "none";
-    } else {
+    } else if (previousScreen === 'settingsScreen') {
         // If we came from settings, go back to settings //
         document.getElementById("settingsScreen").style.display = "block";
         document.getElementById("volumeScreen").style.display = "none";
