@@ -28,8 +28,7 @@ html, body {
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add a shadow effect */
-  animation: slideIn 1.5s ease-out; /* Slide-in animation */
-  max-width: 400px; /* Set a maximum width for the menu */
+  animation: slideIn 1s ease-out; /* Slide-in animation */
   border: 3px solid #deb887;
 }
 
@@ -43,7 +42,7 @@ html, body {
 
 .menu button {
   display: block; /* Make buttons stack vertically */
-  width: 280px;
+  width: 17.5rem;
   padding: 1rem;
   margin: 1rem auto; /* Center the buttons */
   border: none;
@@ -86,12 +85,12 @@ html, body {
   position: absolute;
   top: 20px;
   left: 20px;
-  padding: 0.5rem 1rem;
+  padding: 0.1rem 2rem;
   border: none;
   border-radius: 8px;
   background-color: rgba(255, 250, 240, 0.7); /* Semi-transparent background */
   color: #6b4226;
-  font-size: 1rem;
+  font-size: 2rem;
   cursor: pointer;
   font-family: 'Chewy', cursive;
   transition: background-color 0.3s; /* Smooth transition for background color */
@@ -123,4 +122,24 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Colorblind-friendly styles */
+
+.menu.protanopia button {
+  background: none !important;
+  background-color: #fdae61 !important;
+  color: #000 !important;
+}
+
+.menu.deuteranopia button {
+  background: none !important;
+  background-color: #2b83ba !important;
+  color: #fff !important;
+}
+
+.menu.tritanopia button {
+  background: none !important;
+  background-color: #d7191c !important;
+  color: #fff !important;
 }

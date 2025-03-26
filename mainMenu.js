@@ -22,10 +22,29 @@ function volumeScreen() {
     previousScreen = "settingsScreen"; // Came from the settings menu //
 }
 
+// Displays the accessiblity options - currently focuses on color blindness //
 function accessibilityMenu() {
     document.getElementById("settingsScreen").style.display = "none";
     document.getElementById("accessibilityScreen").style.display = "block";
     previousScreen = "settingsScreen"; // Came from the settings menu //
+}
+
+function setColorBlindMode(type) {
+    const menus = document.querySelectorAll('.menu');
+    const buttons = document.querySelectorAll('button');
+
+  // Remove all existing theme classes
+  menus.forEach(menu => {
+    menu.classList.remove('normal', 'protanopia', 'deuteranopia', 'tritanopia');
+    menu.classList.add(type);
+  });
+
+  buttons.forEach(btn => {
+    btn.classList.remove('normal', 'protanopia', 'deuteranopia', 'tritanopia');
+    btn.classList.add(type);
+  });
+console.log("Setting colorblind mode to:", type);
+
 }
 
 // Takes us back to previous screen //
@@ -39,6 +58,7 @@ function goBack() {
         // If we came from settings, go back to settings //
         document.getElementById("settingsScreen").style.display = "block";
         document.getElementById("volumeScreen").style.display = "none";
+        document.getElementById('accessibilityScreen').style.display = "none";
         previousScreen = "mainMenu"; // Update previous screen in case of another back press //
     }
 }
