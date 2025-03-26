@@ -1,16 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Chewy&family=Lobster&display=swap');
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
   font-family: 'Chewy', cursive; /* Use 'Chewy' font for general text */
   overflow: hidden; /* Prevent scrollbars */
-  background: linear-gradient(180deg, #87ceeb, #f9f0c2); /* Gradient background */
+  background-image: linear-gradient(180deg, #87ceeb, #f9f0c2); /* Gradient background */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .container {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center; 
@@ -44,7 +48,7 @@ body {
   margin: 1rem auto; /* Center the buttons */
   border: none;
   border-radius: 12px;
-  background: linear-gradient(90deg, #ffb347, #ffcc33); /* Gradient background for buttons */
+  background: linear-gradient(90deg, #A65E00, #E69F00); /* Gradient background for buttons */
   color: #fff; /* White text */
   font-size: 1.5rem;
   cursor: pointer; /* Change cursor on hover */
