@@ -88,3 +88,12 @@ function viewCredits() {
         "Credits:\nDeveloped by Dawsyn Birtell, Hope Walton, Kacy Dinkel, Kyle Cassity."
     );
 }
+
+// Expose functions globally so the HTML can access them
+window.startGame = startGame;
+window.viewCredits = viewCredits;
+window.showSettings = showSettings;
+window.volumeScreen = volumeScreen;
+window.goBack = goBack;
+window.viewLeaderboard = viewLeaderboard;
+window.exitGame = exitGame;
