@@ -4,9 +4,9 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  font-family: 'Chewy', cursive; /* Use 'Chewy' font for general text */
-  overflow: hidden; /* Prevent scrollbars */
-  background-image: linear-gradient(180deg, #87ceeb, #f9f0c2); /* Gradient background */
+  font-family: 'Chewy', cursive;
+  overflow: hidden;
+  background-image: linear-gradient(180deg, #87ceeb, #f9f0c2);
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -111,18 +111,30 @@ html, body {
   50% { transform: translateY(-10px); }
 }
 
-body {
+body.game-screen {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh; /* Use full screen height */
   background-color: black;
-  height: 90vh;
+  margin: 0;
 }
+
+
 #container {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
+
+canvas {
+  display: block;
+  margin: 0 auto;
+}
+
 
 /* Colorblind-friendly styles */
 
