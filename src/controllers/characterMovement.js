@@ -125,35 +125,6 @@ export function getNextIntersectionInNextDirection(currentX,currentY,currentDire
   }
 
 
-    
-  
-/*   export function handleMovementInDirection(currentDirection,oppositeDirection,pacmanPosition,intersectionPosition,movingCoordinate,flipX,flipY,angle,velocityX,velocityY,currentVelocity) {
-    let perpendicularDirection = currentDirection === "left" || currentDirection ==="right" ? ["up","down"] : ["left","right"];
-    let condition =false;
-    if (this.nextIntersection) {
-      condition = (this.previousDirection === perpendicularDirection[0] && pacmanPosition <= intersectionPosition) ||
-                  (this.previousDirection === perpendicularDirection[1] && pacmanPosition >= intersectionPosition) ||
-                  (this.previousDirection === oppositeDirection);
-    }
-    this.previousDirection === oppositeDirection;
-      if(condition) {
-        let newPosition = intersectionPosition;
-        if(this.previousDirection != oppositeDirection && newPosition !== pacmanPosition) {
-          if(currentDirection === "left" || currentDirection === "right")
-            this.pacman.body.reset(movingCoordinate,newPosition);
-          else this.pacman.body.reset(newPosition,movingCoordinate);
-        }
-        changeDirection.call(this, flipX, flipY, angle, velocityX, velocityY);
-        adjustPacmanPosition.call(this, velocityX, velocityY);
-      
-      } 
-      else if (currentVelocity ===0 ) {
-        changeDirection.call(this, flipX, flipY, angle, velocityX, velocityY);
-        adjustPacmanPosition.call(this, velocityX, velocityY);
-      }
-  }
- */
-
   export function handleMovementInDirection(
     currentDirection,
     oppositeDirection,

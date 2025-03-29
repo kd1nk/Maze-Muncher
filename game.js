@@ -1,4 +1,5 @@
 import * as Movement from "./src/controllers/characterMovement.js";
+import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
 
 class Pacman extends Phaser.Scene {
   constructor() {
@@ -26,7 +27,7 @@ class Pacman extends Phaser.Scene {
     this.respawnDelay = 5000;
     this.modeTimer = null;
     this.currentMode = "scatter";
-    this.initModeTimers();
+    GhostBehavior.initModeTimers.call(this);
 
     this.lives = 3;
     this.isPacmanAlive = true;
@@ -34,128 +35,6 @@ class Pacman extends Phaser.Scene {
     
   }
 
-  initModeTimers() {
-    this.setModeTimer(this.scatterModeDuration);
-  }
-
-  setModeTimer(duration) {
-    if(this.modeTimer) {
-      clearTimeout(this.modeTimer);
-    }
-    this.modeTimer = setTimeout(()=>{
-      this.switchMode();
-    },duration);
-  }
-
-/*   switchMode() {
-   if(this.currentMode === "scared") {
-    this.currentMode = this.previouseMode || "scatter";
-    this.setModeTimer(this[this.currentMode+"ModeDuration"]);
-    this.ghostSpeed = this.speed*0.7;
-    this.ghosts.forEach(ghost => {
-      clearInterval(ghost.blinkInterval);
-      ghost.setTexture(ghost.originalTexture);
-      let target = this.currentMode === "chase" ? this.getChaseTarget(ghost) : this.getScatterTarget(ghost);
-      this.updateGhostPath(ghost,target);
-      ghost.hasBeenEaten = true;
-    });
-   } else {
-      if(this.currentMode === "scatter") {
-        this.currentMode = "chase";
-        this.setModeTimer(this.chaseModeDuration);
-      } else {
-        this.currentMode = "scatter";
-        this.setModeTimer(this.scatterModeDuration);
-      }
-      this.ghosts.forEach(ghost => {
-        let target = this.currentMode === "chase" ? this.getChaseTarget(ghost) : this.getScatterTarget(ghost);
-        this.updateGhostPath(ghost,target);
-      });
-      this.previouseMode = this.currentMode;
-   }
-} */
-  
-  getChaseTarget(ghost) {
-    //let chaseTarget = null;
-
-    if(ghost.texture.key === "redGhost") {
-      return {x:this.pacman.x,y:this.pacman.y};
-    }
-    if(ghost.texture.key === "pinkGhost") {
-      const offset = this.blockSize*4;
-      switch(this.direction) {
-        case "right":
-         return {x:this.pacman.x+offset,y:this.pacman.y};
-        case "left":
-          return {x:this.pacman.x-offset,y:this.pacman.y};
-       case "up":
-          return {x:this.pacman.x,y:this.pacman.y-offset};
-       case "down":
-        return {x:this.pacman.x,y:this.pacman.y+offset};
-        default:
-          return {x:this.pacman.x,y:this.pacman.y};
-      }
-    }
-    if(ghost.texture.key === "orangeGhost") {
-      const distance = Math.hypot(ghost.x-this.pacman.x,ghost.y-this.pacman.y);
-      return distance > this.blockSize*8 ? {x:this.pacman.x,y:this.pacman.y} :
-       this.CLYDE_SCATTER_TARGET;
-    }
-    if(ghost.texture.key === "blueGhost") {
-      const blinky = this.redGhost;
-
-      let pacmanAhead = {x: this.pacman.x,y:this.pacman.y};
-      const aheadOffset = this.blockSize*2;
-      switch(this.direction) {
-        case "right":
-          pacmanAhead = {x:this.pacman.x+aheadOffset,y:this.pacman.y};
-          break;
-      case "left":
-        pacmanAhead = {x:this.pacman.x-aheadOffset,y:this.pacman.y};
-        break;
-      case "up":
-        pacmanAhead = {x:this.pacman.x,y:this.pacman.y-aheadOffset};
-        break;   
-        case "down":
-          pacmanAhead = {x:this.pacman.x,y:this.pacman.y+aheadOffset};
-          break;     
-      }
-      const vectorX = pacmanAhead.x - blinky.x;
-      const vectorY = pacmanAhead.y - blinky.y;
-
-      return {x:blinky.x+2*vectorX,y:blinky.y+2*vectorY};
-    }
-  }
-
-  
-  getScaredTarget(ghost) {
-    let randomIndex = Math.floor(Math.random()*this.intersections.length);
-    let randomIntersection = this.intersections[randomIndex];
-    return {x:randomIntersection.x,y:randomIntersection.y};
-  }
- 
-  getScatterTarget(ghost) {
-    if(ghost.texture.key === "redGhost")
-      return this.BLINKY_SCATTER_TARGET;
-    if(ghost.texture.key === "pinkGhost")
-      return this.PINKY_SCATTER_TARGET;
-    if(ghost.texture.key === "orangeGhost")
-      return this.CLYDE_SCATTER_TARGET;
-    if(ghost.texture.key === "blueGhost")
-      return this.INKY_SCATTER_TARGET;
-  }
-
-  updateGhostPath(ghost,chaseTarget) {
-    let chaseStartPoint = {x:ghost.x,y:ghost.y};
-
-    if(this.isInghostHouse(ghost.x,ghost.y)) {
-      chaseStartPoint = {x:232,y:240};
-    }
-    
-    ghost.path = this.aStarAlgorithm(chaseStartPoint,chaseTarget);
-    if(ghost.path.length>0)
-      ghost.nextIntersection = ghost.path.shift();
-  }
 
   preload() {
 
@@ -308,16 +187,16 @@ class Pacman extends Phaser.Scene {
     this.detectIntersections();
     this.initializeGhosts(layer);
     let startPoint = {x:232,y:240};
-    this.pinkGhost.path = this.aStarAlgorithm(startPoint,this.PINKY_SCATTER_TARGET);
+    this.pinkGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint,this.PINKY_SCATTER_TARGET);
     this.pinkGhost.nextIntersection = this.pinkGhost.path.shift();
 
-    this.blueGhost.path = this.aStarAlgorithm(startPoint,this.INKY_SCATTER_TARGET);
+    this.blueGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint,this.INKY_SCATTER_TARGET);
     this.blueGhost.nextIntersection = this.blueGhost.path.shift();
 
-    this.orangeGhost.path = this.aStarAlgorithm(startPoint,this.CLYDE_SCATTER_TARGET);
+    this.orangeGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint,this.CLYDE_SCATTER_TARGET);
     this.orangeGhost.nextIntersection = this.orangeGhost.path.shift();
 
-    this.redGhost.path = this.aStarAlgorithm(startPoint,this.BLINKY_SCATTER_TARGET);
+    this.redGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint,this.BLINKY_SCATTER_TARGET);
     this.redGhost.nextIntersection = this.redGhost.path.shift();
 
     this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
@@ -365,113 +244,7 @@ class Pacman extends Phaser.Scene {
     ghost.enteredMaze = false;
     return ghost;
   }
-  isInghostHouse(x,y) {
-    if((x<=262 && x>=208) && (y<=290 && y>240))
-      return true;
-    else return false;
-  }
 
-  aStarAlgorithm(start, target) {
-    const isInGhostHouse = this.isInghostHouse.bind(this);
-
-    function findNearestIntersection(point, intersections) {
-      let nearest = null;
-      let minDist = Infinity;
-      for (const intersection of intersections) {
-        if(isInGhostHouse(intersection.x,intersection.y)) {
-          continue;
-        }
-        const dist = Math.abs(intersection.x - point.x) + Math.abs(intersection.y - point.y);
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = intersection;
-        }
-      }
-      return nearest;
-    }
-  
-    const startIntersection = findNearestIntersection.call(this, start, this.intersections);
-    target = findNearestIntersection.call(this, target, this.intersections);
-  
-    if (!startIntersection || !target) {
-      return [];
-    }
-  
-    const openList = [];
-    const closedList = new Set();
-    const cameFrom = new Map();
-    const gScore = new Map();
-  
-    openList.push({ node: startIntersection, g: 0, f: heuristic(startIntersection, target) });
-    gScore.set(JSON.stringify(startIntersection), 0);
-  
-    function heuristic(node, target) {
-      return Math.abs(node.x - target.x) + Math.abs(node.y - target.y);
-    }
-  
-    while (openList.length > 0) {
-      openList.sort((a, b) => a.f - b.f);
-      const current = openList.shift().node;
-  
-      if (current.x === target.x && current.y === target.y) {
-        const path = [];
-        let currentNode = current;
-        while (cameFrom.has(JSON.stringify(currentNode))) {
-          path.push(currentNode);
-          currentNode = cameFrom.get(JSON.stringify(currentNode));
-        }
-        path.push(startIntersection);
-        return path.reverse();
-      }
-  
-      closedList.add(JSON.stringify(current));
-  
-      const currentIntersection = this.intersections.find(i => i.x === current.x && i.y === current.y);
-  
-      if (currentIntersection) {
-        for (const direction of currentIntersection.openPaths) {
-          const neighbor = this.getNextIntersection(current.x, current.y, direction);
-  
-          if (neighbor && !isInGhostHouse(neighbor.x,neighbor.y) && !closedList.has(JSON.stringify(neighbor))) {
-            const tentativeGScore = gScore.get(JSON.stringify(current)) + 1;
-  
-            if (!gScore.has(JSON.stringify(neighbor)) || tentativeGScore < gScore.get(JSON.stringify(neighbor))) {
-              gScore.set(JSON.stringify(neighbor), tentativeGScore);
-              const fScore = tentativeGScore + heuristic(neighbor, target);
-              openList.push({ node: neighbor, g: tentativeGScore, f: fScore });
-              cameFrom.set(JSON.stringify(neighbor), current);
-            }
-          }
-        }
-      }
-    }
-  
-    return [];
-  }
-  
-  getNextIntersection(currentX,currentY,previousDirection) {
-    let filteredIntersections;
-    const isUp = previousDirection === "up";
-    const isDown = previousDirection === "down";
-    const isLeft = previousDirection === "left";
-    const isRight = previousDirection === "right";
-    filteredIntersections = this.intersections.filter((intersection)=>{
-      return(
-        ((isUp && intersection.x === currentX && intersection.y<currentY)||
-        (isDown && intersection.x === currentX && intersection.y>currentY) ||
-        (isLeft && intersection.y === currentY && intersection.x<currentX) ||
-        (isRight && intersection.y === currentY && intersection.x>currentX))
-      );
-    })
-    .sort((a,b)=>{
-      if(isUp || isDown) {
-        return isUp ? b.y-a.y:a.y-b.y;
-      } else {
-        return isLeft ? b.x-a.x:a.x-b.x;
-      }
-    });
-    return filteredIntersections ? filteredIntersections[0]:null;
-  }
 
   populateBoardAndTrackEmptyTiles(layer) {
     layer.forEachTile((tile)=>{
@@ -503,35 +276,14 @@ class Pacman extends Phaser.Scene {
   eatPowerPill(pacman,powerPill) {
     powerPill.disableBody(true,true);
     this.currentMode = "scared";
-    this.setGhostsToScaredMode();
-    this.setModeTimer(this.scaredModeDuration);
+    GhostBehavior.setGhostsToScaredMode.call(this);
+    GhostBehavior.setModeTimer.call(this,this.scaredModeDuration);
     this.ghostSpeed = this.speed*0.5;
     this.ghosts.forEach((ghost)=>{
       ghost.hasBeenEaten = false;
     });
   }
 
-  setGhostsToScaredMode() {
-    this.ghosts.forEach(ghost=> {
-      let scaredTarget = this.getScaredTarget();
-      this.updateGhostPath(ghost,scaredTarget);
-      if(ghost.blinkInterval)
-        clearInterval(ghost.blinkInterval);
-      const blinkTime = this.scaredModeDuration - 2000;
-      ghost.blinkInterval = setTimeout(()=> {
-
-        if(ghost.hasBeenEaten)
-          return;
-
-        let blinkOn = true;
-        ghost.blinkInterval = setInterval(()=>{
-          blinkOn = !blinkOn;
-          ghost.setTexture(blinkOn ? "scaredGhost" : "scaredGhostWhite");
-        },200);
-      },blinkTime);
-      ghost.setTexture("scaredGhost");
-    });
-  }
 
   detectIntersections() {
     const directions = [
@@ -673,12 +425,12 @@ class Pacman extends Phaser.Scene {
     ghost.hasBeenEaten = true;
     ghost.enteredMaze = false;
     clearInterval(ghost.blinkInterval);
-    let target = this.getScatterTarget(ghost);
-    this.updateGhostPath(ghost,target);
+    let target = GhostBehavior.getScatterTarget.call(this, ghost);
+    GhostBehavior.updateGhostPath.call(this, ghost,target);
     ghost.direction = "left";
   });
   this.startGhostEntries();
-  this.setModeTimer(this.scatterModeDuration);
+  GhostBehavior.setModeTimer.call(this, this.scatterModeDuration);
   this.currentMode = "scatter";
   this.previouseMode = this.currentMode;
  }
@@ -691,8 +443,8 @@ respawnGhost(ghost) {
   ghost.hasBeenEaten = true;
   this.enterMaze(ghost);
   let target = this.currentMode === "chase" ?
-  this.getChaseTarget(ghost) : this.getScatterTarget(ghost);
-  this.updateGhostPath(ghost,target);
+  GhostBehavior.getChaseTarget.call(this, ghost) : GhostBehavior.getScatterTarget.call(this, ghost);
+  GhostBehavior.updateGhostPath.call(this, ghost,target);
 }
 
   update() {
@@ -723,7 +475,7 @@ respawnGhost(ghost) {
     
 
   handleGhostDirection(ghost) {
-    if(this.isInghostHouse(ghost.x,ghost.y)){
+    if(GhostBehavior.isInghostHouse.call(this, ghost.x,ghost.y)){
       this.changeGhostDirection(ghost,0,-this.ghostSpeed);
       if(ghost.direction === "down")
       ghost.direction = "up";
@@ -734,9 +486,9 @@ respawnGhost(ghost) {
       ghost.stuckTimer = (ghost.stuckTimer || 0) +1;
       if(ghost.stuckTimer>30) {
         ghost.stuckTimer = 0;
-        let newTarget = this.currentMode === "scared" ? this.getScaredTarget() :
-        this.currentMode === "chase" ? this.getChaseTarget(ghost) : this.getScatterTarget(ghost);
-        this.updateGhostPath(ghost,newTarget);
+        let newTarget = this.currentMode === "scared" ? GhostBehavior.getScaredTarget.call(this) :
+        this.currentMode === "chase" ? GhostBehavior.getChaseTarget.call(this, ghost) : GhostBehavior.getScatterTarget.call(this, ghost);
+        GhostBehavior.updateGhostPath.call(this, ghost,newTarget);
       }
     } else 
         ghost.stuckTimer = 0;
@@ -758,16 +510,16 @@ respawnGhost(ghost) {
         return;
 
       if(this.currentMode === "chase") {
-        let chaseTarget = this.getChaseTarget(ghost);
-        this.updateGhostPath(ghost,chaseTarget);
+        let chaseTarget = GhostBehavior.getChaseTarget.call(this, ghost);
+        GhostBehavior.updateGhostPath.call(this, ghost,chaseTarget);
       }
 
       if(ghost.path.length>0) {
         ghost.nextIntersection = ghost.path.shift();
       }
       if(ghost.path.length ==0 && this.currentMode === "scared") {
-        let scaredTarget = this.getScaredTarget();
-        this.updateGhostPath(ghost,scaredTarget);
+        let scaredTarget = GhostBehavior.getScaredTarget.call(this);
+        GhostBehavior.updateGhostPath.call(this, ghost,scaredTarget);
       }
       
       let newDirection = this.getGhostNextDirection(ghost,ghost.nextIntersection);
