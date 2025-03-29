@@ -1,5 +1,7 @@
 import * as Movement from "./src/controllers/characterMovement.js";
 import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
+import * as characterDeath from "./src/controllers/characterDeath.js";
+
 
 class Pacman extends Phaser.Scene {
   constructor() {
@@ -364,59 +366,10 @@ class Pacman extends Phaser.Scene {
       this.respawnGhost(ghost);
     });
    } else if (ghost.hasBeenEaten) {
-    this.pacmanDies();
+    characterDeath.pacmanDies.call(this);
    }
  }
   
- pacmanDies() {
-   if(!this.isPacmanAlive)
-    return;
-
-   this.pacman.setVelocityY(0);
-   this.pacman.setVelocityX(0);
-   this.isPacmanAlive = false;
-   this.pacman.anims.stop();
-
-   this.pacman.play("pacmanDeath");
-   this.time.delayedCall(2000,()=>{
-    this.resetAfterDeath();
-   });
- }
- resetAfterDeath() {
-  this.lives -=1;
-  if(this.lives ===1)
-    this.lifeCounter1.destroy();
-  if(this.lives ===2)
-    this.lifeCounter2.destroy();
-  if(this.lives>0) {
-    this.pacman.setPosition(230,432);
-    this.resetGhosts();
-    this.anims.create({
-      key:"pacmanAnim",
-      frames: [
-        {key:"pacman"},
-        {key:"pacman1"},
-        {key:"pacman2"},
-        {key:"pacman3"},
-        {key:"pacman4"},
-      ],
-      frameRate:10,
-      repeat:-1,
-    });
-    this.pacman.play("pacmanAnim");
-    this.currentMode = "scatter";
-  } else {
-    this.pacman.destroy();
-    this.redGhost.destroy();
-    this.pinkGhost.destroy();
-    this.blueGhost.destroy();
-    this.orangeGhost.destroy();
-    this.physics.pause();
-    this.add.image(this.cameras.main.centerX,this.cameras.main.centerY+56,"endGameImage").setOrigin(0.5);
-  }
-  this.isPacmanAlive = true;
-  this.hasRespawned = true;
- }
 
  resetGhosts() {
   this.redGhost.setPosition(232,290);
