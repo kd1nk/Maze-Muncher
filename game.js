@@ -3,7 +3,7 @@ import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
 
 class Pacman extends Phaser.Scene {
   constructor() {
-    super();
+    super({ key: 'Pacman' });
     this.Pacman =null;
     this.direction = "null";
     this.previousDirection = "left";
@@ -206,6 +206,12 @@ class Pacman extends Phaser.Scene {
     });
       this.lifeCounter1 = this.add.image(32,32,"Farm boy0");
       this.lifeCounter2 = this.add.image(56,32,"Farm boy0");
+
+    // Pause menu scene
+    this.input.keyboard.on('keydown-P', () => {
+      this.scene.launch('PauseMenu');  // Start the pause menu scene
+      this.scene.pause();              // Pause the current scene
+    });
     }
 
   initializeGhosts(layer) {
@@ -651,6 +657,10 @@ isMovingInxDirection(direction) {
   type:Phaser.AUTO,
   width:464,
   height:560,
+  scale: {
+    mode: Phaser.Scale.FIT,         // Fit the screen
+    autoCenter: Phaser.Scale.NO_CENTER  // Manually adjust centering
+  },
   parent:"container",
   backgroundColor:"#000000",
   physics:{
@@ -660,7 +670,7 @@ isMovingInxDirection(direction) {
       debug: false,
     },
   },
-  scene: Pacman,
+  scene: [Pacman, PauseMenu],  // Added pause screen scene
  };
  const game = new Phaser.Game(config);
  
