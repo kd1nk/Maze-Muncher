@@ -1,5 +1,6 @@
 import * as EnemyMovement from "./enemyMovement.js";
 import * as GhostBehavior from "./ghostBehaviors.js";
+import * as characterDeath from "./characterDeath.js";
 
 export function handlePacmanGhostCollision(pacman, ghost) {
     if (this.currentMode === "scared" && !ghost.hasBeenEaten) {

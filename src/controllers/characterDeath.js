@@ -1,3 +1,5 @@
+import { resetGhosts } from "./enemyDeath.js";
+
 export function pacmanDies() {
     if (!this.isPacmanAlive)
         return;
@@ -20,7 +22,7 @@ export function resetAfterDeath() {
         this.lifeCounter2.destroy();
     if (this.lives > 0) {
         this.pacman.setPosition(230, 432);
-        this.resetGhosts(); // Reset ghosts to their initial positions
+        resetGhosts.call(this); // Reset ghosts to their initial positions
         this.currentMode = "scatter";
     } else {
         this.pacman.destroy();

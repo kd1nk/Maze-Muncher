@@ -1,9 +1,10 @@
 import * as Movement from "./src/controllers/characterMovement.js";
 import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
-import * as characterDeath from "./src/controllers/characterDeath.js";
+import * as CharacterDeath from "./src/controllers/characterDeath.js";
 import * as EnemyMovement from "./src/controllers/enemyMovement.js";
 import * as MazeUtils from "./src/controllers/mazeUtils.js";
 import * as EnemyDeath from "./src/controllers/enemyDeath.js";
+import * as EatCorn from "./src/controllers/eatCorn.js";
 
 
 class Pacman extends Phaser.Scene {
@@ -186,8 +187,8 @@ class Pacman extends Phaser.Scene {
     this.dots = this.physics.add.group();
     this.powerPills = this.physics.add.group();
     MazeUtils.populateBoardAndTrackEmptyTiles.call(this, layer);
-    this.physics.add.overlap(this.pacman,this.dots,this.eatDot,null,this);
-    this.physics.add.overlap(this.pacman,this.powerPills,this.eatPowerPill,null,this);
+    this.physics.add.overlap(this.pacman,this.dots, EatCorn.eatDot,null,this);
+    this.physics.add.overlap(this.pacman,this.powerPills, EatCorn.eatPowerPill,null,this);
     this.cursors = this.input.keyboard.createCursorKeys();
     MazeUtils.detectIntersections.call(this);
     EnemyMovement.initializeGhosts.call(this, layer);
@@ -218,22 +219,6 @@ class Pacman extends Phaser.Scene {
       this.scene.pause();              // Pause the current scene
     });
     }
-
-  
-  eatDot(pacman,dot) {
-    dot.disableBody(true,true);
-  }
-
-  eatPowerPill(pacman,powerPill) {
-    powerPill.disableBody(true,true);
-    this.currentMode = "scared";
-    GhostBehavior.setGhostsToScaredMode.call(this);
-    GhostBehavior.setModeTimer.call(this,this.scaredModeDuration);
-    this.ghostSpeed = this.speed*0.5;
-    this.ghosts.forEach((ghost)=>{
-      ghost.hasBeenEaten = false;
-    });
-  }
 
 
   update() {
