@@ -2,6 +2,8 @@ import * as Movement from "./src/controllers/characterMovement.js";
 import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
 import * as characterDeath from "./src/controllers/characterDeath.js";
 import * as EnemyMovement from "./src/controllers/enemyMovement.js";
+import * as MazeUtils from "./src/controllers/mazeUtils.js";
+import * as EnemyDeath from "./src/controllers/enemyDeath.js";
 
 
 class Pacman extends Phaser.Scene {
@@ -183,11 +185,11 @@ class Pacman extends Phaser.Scene {
     this.physics.add.collider(this.pacman,layer);
     this.dots = this.physics.add.group();
     this.powerPills = this.physics.add.group();
-    this.populateBoardAndTrackEmptyTiles(layer);
+    MazeUtils.populateBoardAndTrackEmptyTiles.call(this, layer);
     this.physics.add.overlap(this.pacman,this.dots,this.eatDot,null,this);
     this.physics.add.overlap(this.pacman,this.powerPills,this.eatPowerPill,null,this);
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.detectIntersections();
+    MazeUtils.detectIntersections.call(this);
     EnemyMovement.initializeGhosts.call(this, layer);
     let startPoint = {x:232,y:240};
     this.pinkGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint,this.PINKY_SCATTER_TARGET);
@@ -205,7 +207,7 @@ class Pacman extends Phaser.Scene {
     this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
 
     this.ghosts.forEach(ghost => {
-      this.physics.add.overlap(this.pacman,ghost,this.handlePacmanGhostCollision,null,this);
+      this.physics.add.overlap(this.pacman,ghost,EnemyDeath.handlePacmanGhostCollision,null,this);
     });
       this.lifeCounter1 = this.add.image(32,32,"Farm boy0");
       this.lifeCounter2 = this.add.image(56,32,"Farm boy0");
@@ -217,30 +219,7 @@ class Pacman extends Phaser.Scene {
     });
     }
 
-
-  populateBoardAndTrackEmptyTiles(layer) {
-    layer.forEachTile((tile)=>{
-      if(!this.board[tile.y]) {
-        this.board[tile.y] = [];
-      }
-      this.board[tile.y][tile.x] = tile.index;
-      if(tile.y<4 || (tile.y>11 && tile.y<23 && tile.x>6 && tile.x<21) || (tile.y ===17 && tile.x!==6 && tile.x !==21))
-        return;
-      let rightTile = this.map.getTileAt(tile.x+1,tile.y,true,"Tile Layer 1");
-      let bottomTile = this.map.getTileAt(tile.x,tile.y+1,true,"Tile Layer 1");
-      let rightBottomTile = this.map.getTileAt(tile.x+1,tile.y+1,true,"Tile Layer 1");
-      if(tile.index === -1 && rightTile && rightTile.index === -1 && bottomTile && bottomTile.index === -1 && rightBottomTile && rightBottomTile.index === -1){
-        const x = tile.x*tile.width;
-        const y = tile.y*tile.height;
-        this.dots.create(x+tile.width,y+tile.height,"dot");
-      }
-    });
-
-    this.powerPills.create(32,144,"powerPill");
-    this.powerPills.create(432,144,"powerPill");
-    this.powerPills.create(32,480,"powerPill");
-    this.powerPills.create(432,480,"powerPill");
-  }
+  
   eatDot(pacman,dot) {
     dot.disableBody(true,true);
   }
@@ -256,119 +235,6 @@ class Pacman extends Phaser.Scene {
     });
   }
 
-
-  detectIntersections() {
-    const directions = [
-      {x:-this.blockSize,y:0,name:"left"},
-      {x:this.blockSize,y:0,name:"right"},
-      {x:0,y:-this.blockSize,name:"up"},
-      {x:0,y:this.blockSize,name:"down"},     
-    ];
-    const blockSize = this.blockSize;
-    for(let y=0; y<this.map.heightInPixels;y+=blockSize) {
-      for(let x=0; x<this.map.widthInPixels;x+=blockSize) {
-        if(x%blockSize !==0 || y%blockSize !==0) continue;
-        if(!this.isPointClear(x,y)) continue;
-        let openPaths = [];
-        directions.forEach((dir)=>{
-          if(this.isPathOpenAroundPoint(x+dir.x,y+dir.y)) {
-            openPaths.push(dir.name);
-          }
-        });
-        if(openPaths.length>2 && y>64 && y<530) {
-          this.intersections.push({x:x,y:y,openPaths:openPaths});
-        } else if (openPaths.length ===2 && y>64 && y<530) {
-           const [dir1,dir2] = openPaths;
-           if(((dir1==="left" || dir1 === "right")&&
-           (dir2==="up" || dir2 === "down")) ||
-           (dir1==="up" || dir1 === "down") &&
-           (dir2==="left" || dir2 === "right")) {
-            this.intersections.push({x:x,y:y,openPaths:openPaths});
-           }
-        }
-      }
-    }
-  }
-
-  isPathOpenAroundPoint(pixelX,pixelY) {
-    const corners = [
-      {x:pixelX-1,y:pixelY-1},
-      {x:pixelX+1,y:pixelY-1},
-      {x:pixelX-1,y:pixelY+1},
-      {x:pixelX+1,y:pixelY+1},
-    ];
-    return corners.every((corner)=>{
-      const tileX = Math.floor(corner.x/this.blockSize);
-      const tileY = Math.floor(corner.y/this.blockSize);
-      if(!this.board[tileY]|| this.board[tileY][tileX]!==-1) {
-        return false;
-      }
-      return true;
-    });
-  }
-  isPointClear(x,y) {
-    const corners = [
-      {x:x-1,y:y-1},
-      {x:x+1,y:y-1},
-      {x:x-1,y:y+1},
-      {x:x+1,y:y+1},
-    ]; 
-    return corners.every((corner)=>{
-      const tileX = Math.floor(corner.x/this.blockSize);
-      const tileY = Math.floor(corner.y/this.blockSize);
-     
-      return !this.board[tileY] || this.board[tileY][tileX] === -1;
-    });
-  }
-
-  
- handlePacmanGhostCollision(pacman,ghost) {
-   if(this.currentMode === "scared" && !ghost.hasBeenEaten) {
-    ghost.setActive(false);
-    ghost.setVisible(false);
-    this.time.delayedCall(1000,()=>{
-      this.respawnGhost(ghost);
-    });
-   } else if (ghost.hasBeenEaten) {
-    characterDeath.pacmanDies.call(this);
-   }
- }
-  
-
- resetGhosts() {
-  this.redGhost.setPosition(232,290);
-  this.pinkGhost.setPosition(220,290);
-  this.blueGhost.setPosition(255,290);
-  this.orangeGhost.setPosition(210,290);
-  
-  this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
-  
-  this.ghosts.forEach(ghost => {
-    ghost.setTexture(ghost.originalTexture);
-    ghost.hasBeenEaten = true;
-    ghost.enteredMaze = false;
-    clearInterval(ghost.blinkInterval);
-    let target = GhostBehavior.getScatterTarget.call(this, ghost);
-    GhostBehavior.updateGhostPath.call(this, ghost,target);
-    ghost.direction = "left";
-  });
-  EnemyMovement.startGhostEntries.call(this);
-  GhostBehavior.setModeTimer.call(this, this.scatterModeDuration);
-  this.currentMode = "scatter";
-  this.previouseMode = this.currentMode;
- }
-
-respawnGhost(ghost) {
-  ghost.setPosition(232,290);
-  ghost.setActive(true);
-  ghost.setVisible(true);
-  ghost.setTexture(ghost.originalTexture);
-  ghost.hasBeenEaten = true;
-  EnemyMovement.enterMaze.call(this, ghost);
-  let target = this.currentMode === "chase" ?
-  GhostBehavior.getChaseTarget.call(this, ghost) : GhostBehavior.getScatterTarget.call(this, ghost);
-  GhostBehavior.updateGhostPath.call(this, ghost,target);
-}
 
   update() {
     if(!this.isPacmanAlive || this.lives === 0)
@@ -395,9 +261,10 @@ respawnGhost(ghost) {
       EnemyMovement.handleGhostMovement.call(this, this.redGhost);
     }
   }
-    
 
-getPerpendicularDirection(direction) {
+//Moved to mazeUtils.js
+
+/* getPerpendicularDirection(direction) {
   switch(direction) {
     case "up":
       return "right";
@@ -415,7 +282,9 @@ getPerpendicularDirection(direction) {
 isMovingInxDirection(direction) {
   let result =  (direction === "left" || direction === "right" ) ? true : false;
   return result;
-}
+} */
+
+//---------------------------------------------------------------------
 
 
 }
