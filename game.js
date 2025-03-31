@@ -35,7 +35,8 @@ class Pacman extends Phaser.Scene {
     this.lives = 3;
     this.isPacmanAlive = true;
     this.hasRespawned = false
-    
+    this.isStarting = true;
+
   }
 
 
@@ -113,6 +114,8 @@ class Pacman extends Phaser.Scene {
     this.load.image("endGameImage","assets/pac man text/spr_message_2.png");
   }
   create() {
+    this.createStartCountdown();
+
     this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
     const layer = this.map.createLayer("Tile Layer 1",[tileset]);
@@ -217,6 +220,95 @@ class Pacman extends Phaser.Scene {
     });
     }
 
+    createStartCountdown() {
+      const { width, height } = this.scale;
+      let count = 3;
+    
+      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
+    
+      const countdownText = this.add.text(width / 2, height / 2, count, {
+        fontSize: '100px',
+        color: '#ffffff',
+        fontFamily: 'Chewy'
+      }).setOrigin(0.5).setDepth(11);
+    
+      this.time.addEvent({
+        delay: 1000,
+        repeat: 3,
+        callback: () => {
+          count--;
+          if (count > 0) {
+            countdownText.setText(count);
+          } else if (count === 0) {
+            countdownText.setText("GO!");
+          } else {
+            this.tweens.add({
+              targets: [overlay, countdownText],
+              alpha: 0,
+              duration: 500,
+              onComplete: () => {
+                overlay.destroy();
+                countdownText.destroy();
+                this.isStarting = false;
+              }
+            });
+          }
+        }
+      });
+    }
+    
+    endGame(outcome) {
+      const { width, height } = this.scale;
+    
+      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);
+    
+      this.tweens.add({
+        targets: overlay,
+        alpha: 0.8,
+        duration: 800,
+        onComplete: () => {
+          const isWin = outcome === 'win';
+          const message = isWin ? 'You Win!' : 'Game Over';
+          const color = isWin ? '#00ff00' : '#ff0000';
+    
+          const resultText = this.add.text(width / 2, height / 2 - 60, message, {
+            fontSize: '64px',
+            color,
+            fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11);
+    
+          const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
+            fontSize: '28px',
+            backgroundColor: '#fff',
+            color: '#000',
+            padding: { x: 20, y: 10 },
+            fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11).setInteractive();
+    
+          returnBtn.on('pointerdown', () => {
+            window.location.href = 'mainMenu.html';
+          });
+    
+          if (!isWin) {
+            const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
+              fontSize: '28px',
+              backgroundColor: '#fff',
+              color: '#000',
+              padding: { x: 20, y: 10 },
+              fontFamily: 'Chewy'
+            }).setOrigin(0.5).setDepth(11).setInteractive();
+    
+            tryAgainBtn.on('pointerdown', () => {
+              this.scene.restart();
+            });
+          }
+        }
+      });
+    
+      this.physics.pause();
+      this.isPacmanAlive = false;
+    }
+    
 
   populateBoardAndTrackEmptyTiles(layer) {
     layer.forEachTile((tile)=>{
@@ -241,9 +333,14 @@ class Pacman extends Phaser.Scene {
     this.powerPills.create(32,480,"powerPill");
     this.powerPills.create(432,480,"powerPill");
   }
-  eatDot(pacman,dot) {
-    dot.disableBody(true,true);
+  eatDot(pacman, dot) {
+    dot.disableBody(true, true);
+  
+    if (this.dots.countActive(true) === 0) {
+      this.endGame("win");
+    }
   }
+  
 
   eatPowerPill(pacman,powerPill) {
     powerPill.disableBody(true,true);
@@ -371,6 +468,9 @@ respawnGhost(ghost) {
 }
 
   update() {
+    
+    if (this.isStarting) return;
+
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 

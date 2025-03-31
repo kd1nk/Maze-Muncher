@@ -14,23 +14,23 @@ export function pacmanDies() {
 }
 export function resetAfterDeath() {
     this.lives -= 1;
-    if (this.lives === 1)
-        this.lifeCounter1.destroy();
-    if (this.lives === 2)
-        this.lifeCounter2.destroy();
+  
+    if (this.lives === 1) this.lifeCounter1.destroy();
+    if (this.lives === 2) this.lifeCounter2.destroy();
+  
     if (this.lives > 0) {
-        this.pacman.setPosition(230, 432);
-        this.resetGhosts(); // Reset ghosts to their initial positions
-        this.currentMode = "scatter";
+      this.pacman.setPosition(230, 432);
+      this.resetGhosts(); // Reset ghosts to their initial positions
+      this.currentMode = "scatter";
+      this.isPacmanAlive = true;
+      this.hasRespawned = true;
+  
+      // Show countdown screen before resuming
+      this.isStarting = true;
+      this.createStartCountdown(); // <-- make sure this method exists in your scene
     } else {
-        this.pacman.destroy();
-        this.redGhost.destroy();
-        this.pinkGhost.destroy();
-        this.blueGhost.destroy();
-        this.orangeGhost.destroy();
-        this.physics.pause();
-        this.add.image(this.cameras.main.centerX, this.cameras.main.centerY + 56, "endGameImage").setOrigin(0.5);
+      // Game over
+      this.endGame("lose"); // <-- make sure this method exists in your scene
     }
-    this.isPacmanAlive = true;
-    this.hasRespawned = true;
-}
+  }
+  
