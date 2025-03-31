@@ -2,6 +2,8 @@ import * as GhostBehavior from "./ghostBehaviors.js";
 
 export function eatDot(pacman, dot) {
     dot.disableBody(true, true);
+    this.score += 100;
+    this.scoreText.setText('Score: ' + this.score);
 }
 
 export function eatPowerPill(pacman, powerPill) {

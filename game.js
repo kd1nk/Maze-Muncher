@@ -213,6 +213,22 @@ class Pacman extends Phaser.Scene {
       this.lifeCounter1 = this.add.image(32,32,"Farm boy0");
       this.lifeCounter2 = this.add.image(56,32,"Farm boy0");
 
+    //HERE IS OUR SCORE TRACKER
+    this.score = 0;
+    this.scoreText = this.add.text(this.cameras.main.width / 2, 8, 'Score: 0', {
+      fontSize: '18px', 
+      fill: '#fff' 
+    }).setOrigin(0.5, 0);  
+
+    //HERE IS OUR TIMER AND BY PROXY, SCORE MULTIPLIER. CURRENTLY NOT WORKING.
+    this.scoreMultiplier = 5.00;
+    this.timeElapsed = 0;
+    this.decreaseRate = 0.05;
+    this.multiplierText = this.add.text(300, 32, `Multiplier: x${this.scoreMultiplier}`,{
+      font: '16px Arial',
+      fill: '#ffffff'
+    });
+
     // Pause menu scene
     this.input.keyboard.on('keydown-P', () => {
       this.scene.launch('PauseMenu');  // Start the pause menu scene
@@ -220,8 +236,24 @@ class Pacman extends Phaser.Scene {
     });
     }
 
+    //update score multiplier
+  updateMultiplier(delta){
+    this.timeElapsed += delta;
 
-  update() {
+    if(this.timeElapsed >= 1000){
+     this.timeElapsed = 0;
+
+      if(this.scoreMultiplier > 1){
+        this.scoreMultiplier -= this.decreaseRate;
+        this.scoreMultiplier = Math.max(this.scoreMultiplier, 1.00);
+      }
+
+      this.multiplierText.setText(`Multiplier: x${this.scoreMultiplier.toFixed(2)}`);
+    }
+  }
+
+
+  update(time, delta) {
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 
@@ -245,6 +277,10 @@ class Pacman extends Phaser.Scene {
       EnemyMovement.handleGhostDirection.call(this, this.redGhost);
       EnemyMovement.handleGhostMovement.call(this, this.redGhost);
     }
+
+    //updating multiplier
+    this.updateMultiplier(delta);
+
   }
 
 //Moved to mazeUtils.js
