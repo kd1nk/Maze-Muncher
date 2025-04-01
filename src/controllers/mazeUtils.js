@@ -1,26 +1,56 @@
 export function populateBoardAndTrackEmptyTiles(layer) {
+    // Define the power pill positions (in pixels)
+    const powerPillPositions = [
+        { x: 32, y: 144 },
+        { x: 432, y: 144 },
+        { x: 32, y: 480 },
+        { x: 432, y: 480 }
+    ];
+
     layer.forEachTile((tile) => {
         if (!this.board[tile.y]) {
             this.board[tile.y] = [];
         }
         this.board[tile.y][tile.x] = tile.index;
-        if (tile.y < 4 || (tile.y > 11 && tile.y < 23 && tile.x > 6 && tile.x < 21) || (tile.y === 17 && tile.x !== 6 && tile.x !== 21))
+        // Skip tiles that shouldn't be considered for dots
+        if (
+            tile.y < 4 ||
+            (tile.y > 11 && tile.y < 23 && tile.x > 6 && tile.x < 21) ||
+            (tile.y === 17 && tile.x !== 6 && tile.x !== 21)
+        )
             return;
+
         let rightTile = this.map.getTileAt(tile.x + 1, tile.y, true, "Tile Layer 1");
         let bottomTile = this.map.getTileAt(tile.x, tile.y + 1, true, "Tile Layer 1");
         let rightBottomTile = this.map.getTileAt(tile.x + 1, tile.y + 1, true, "Tile Layer 1");
-        if (tile.index === -1 && rightTile && rightTile.index === -1 && bottomTile && bottomTile.index === -1 && rightBottomTile && rightBottomTile.index === -1) {
+
+        if (
+            tile.index === -1 &&
+            rightTile && rightTile.index === -1 &&
+            bottomTile && bottomTile.index === -1 &&
+            rightBottomTile && rightBottomTile.index === -1
+        ) {
             const x = tile.x * tile.width;
             const y = tile.y * tile.height;
-            this.dots.create(x + tile.width, y + tile.height, "dot");
+            // Calculate the dot's intended pixel position.
+            const dotX = x + tile.width;
+            const dotY = y + tile.height;
+
+            // Only create a dot if its position is NOT one of the power pill positions.
+            const isUnderPowerPill = powerPillPositions.some(pos => pos.x === dotX && pos.y === dotY);
+            if (!isUnderPowerPill) {
+                this.dots.create(dotX, dotY, "dot");
+            }
         }
     });
 
+    // Create power pills at their fixed positions.
     this.powerPills.create(32, 144, "powerPill");
     this.powerPills.create(432, 144, "powerPill");
     this.powerPills.create(32, 480, "powerPill");
     this.powerPills.create(432, 480, "powerPill");
 }
+
 
 export function detectIntersections() {
     const directions = [
