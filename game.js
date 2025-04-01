@@ -38,6 +38,7 @@ class Pacman extends Phaser.Scene {
     this.lives = 3;
     this.isPacmanAlive = true;
     this.hasRespawned = false
+    this.isStarting = true;
 
   }
 
@@ -116,7 +117,9 @@ class Pacman extends Phaser.Scene {
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
   }
   create() {
-    this.map = this.make.tilemap({ key: "map" });
+    this.createStartCountdown();
+
+    this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
     const layer = this.map.createLayer("Tile Layer 1", [tileset]);
     layer.setCollisionByExclusion(-1, true);
@@ -234,27 +237,260 @@ class Pacman extends Phaser.Scene {
       this.scene.launch('PauseMenu');  // Start the pause menu scene
       this.scene.pause();              // Pause the current scene
     });
+    }
+
+    createStartCountdown() {
+      const { width, height } = this.scale;
+      let count = 3;
+    
+      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
+    
+      const countdownText = this.add.text(width / 2, height / 2, count, {
+        fontSize: '100px',
+        color: '#ffffff',
+        fontFamily: 'Chewy'
+      }).setOrigin(0.5).setDepth(11);
+    
+      this.time.addEvent({
+        delay: 1000,
+        repeat: 3,
+        callback: () => {
+          count--;
+          if (count > 0) {
+            countdownText.setText(count);
+          } else if (count === 0) {
+            countdownText.setText("GO!");
+          } else {
+            this.tweens.add({
+              targets: [overlay, countdownText],
+              alpha: 0,
+              duration: 500,
+              onComplete: () => {
+                overlay.destroy();
+                countdownText.destroy();
+                this.isStarting = false;
+              }
+            });
+          }
+        }
+      });
+    }
+    
+    endGame(outcome) {
+      const { width, height } = this.scale;
+    
+      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);
+    
+      this.tweens.add({
+        targets: overlay,
+        alpha: 0.8,
+        duration: 800,
+        onComplete: () => {
+          const isWin = outcome === 'win';
+          const message = isWin ? 'You Win!' : 'Game Over';
+          const color = isWin ? '#00ff00' : '#ff0000';
+    
+          const resultText = this.add.text(width / 2, height / 2 - 60, message, {
+            fontSize: '64px',
+            color,
+            fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11);
+    
+          const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
+            fontSize: '28px',
+            backgroundColor: '#fff',
+            color: '#000',
+            padding: { x: 20, y: 10 },
+            fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11).setInteractive();
+    
+          returnBtn.on('pointerdown', () => {
+            window.location.href = 'mainMenu.html';
+          });
+    
+          if (!isWin) {
+            const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
+              fontSize: '28px',
+              backgroundColor: '#fff',
+              color: '#000',
+              padding: { x: 20, y: 10 },
+              fontFamily: 'Chewy'
+            }).setOrigin(0.5).setDepth(11).setInteractive();
+    
+            tryAgainBtn.on('pointerdown', () => {
+              this.scene.restart();
+            });
+          }
+        }
+      });
+    
+      this.physics.pause();
+      this.isPacmanAlive = false;
+    }
+    
+
+  populateBoardAndTrackEmptyTiles(layer) {
+    layer.forEachTile((tile)=>{
+      if(!this.board[tile.y]) {
+        this.board[tile.y] = [];
+      }
+      this.board[tile.y][tile.x] = tile.index;
+      if(tile.y<4 || (tile.y>11 && tile.y<23 && tile.x>6 && tile.x<21) || (tile.y ===17 && tile.x!==6 && tile.x !==21))
+        return;
+      let rightTile = this.map.getTileAt(tile.x+1,tile.y,true,"Tile Layer 1");
+      let bottomTile = this.map.getTileAt(tile.x,tile.y+1,true,"Tile Layer 1");
+      let rightBottomTile = this.map.getTileAt(tile.x+1,tile.y+1,true,"Tile Layer 1");
+      if(tile.index === -1 && rightTile && rightTile.index === -1 && bottomTile && bottomTile.index === -1 && rightBottomTile && rightBottomTile.index === -1){
+        const x = tile.x*tile.width;
+        const y = tile.y*tile.height;
+        this.dots.create(x+tile.width,y+tile.height,"dot");
+      }
+    });
+
+    this.powerPills.create(32,144,"powerPill");
+    this.powerPills.create(432,144,"powerPill");
+    this.powerPills.create(32,480,"powerPill");
+    this.powerPills.create(432,480,"powerPill");
+  }
+  eatDot(pacman, dot) {
+    dot.disableBody(true, true);
+  
+    if (this.dots.countActive(true) === 0) {
+      this.endGame("win");
+    }
+  }
+  
+
+  eatPowerPill(pacman,powerPill) {
+    powerPill.disableBody(true,true);
+    this.currentMode = "scared";
+    GhostBehavior.setGhostsToScaredMode.call(this);
+    GhostBehavior.setModeTimer.call(this,this.scaredModeDuration);
+    this.ghostSpeed = this.speed*0.5;
+    this.ghosts.forEach((ghost)=>{
+      ghost.hasBeenEaten = false;
+    });
   }
 
-  //update score multiplier
-  updateMultiplier(delta) {
-    this.timeElapsed += delta;
 
-    if (this.timeElapsed >= 1000) {
-      this.timeElapsed = 0;
-
-      if (this.scoreMultiplier > 1) {
-        this.scoreMultiplier -= this.decreaseRate;
-        this.scoreMultiplier = Math.max(this.scoreMultiplier, 1.00);
+  detectIntersections() {
+    const directions = [
+      {x:-this.blockSize,y:0,name:"left"},
+      {x:this.blockSize,y:0,name:"right"},
+      {x:0,y:-this.blockSize,name:"up"},
+      {x:0,y:this.blockSize,name:"down"},     
+    ];
+    const blockSize = this.blockSize;
+    for(let y=0; y<this.map.heightInPixels;y+=blockSize) {
+      for(let x=0; x<this.map.widthInPixels;x+=blockSize) {
+        if(x%blockSize !==0 || y%blockSize !==0) continue;
+        if(!this.isPointClear(x,y)) continue;
+        let openPaths = [];
+        directions.forEach((dir)=>{
+          if(this.isPathOpenAroundPoint(x+dir.x,y+dir.y)) {
+            openPaths.push(dir.name);
+          }
+        });
+        if(openPaths.length>2 && y>64 && y<530) {
+          this.intersections.push({x:x,y:y,openPaths:openPaths});
+        } else if (openPaths.length ===2 && y>64 && y<530) {
+           const [dir1,dir2] = openPaths;
+           if(((dir1==="left" || dir1 === "right")&&
+           (dir2==="up" || dir2 === "down")) ||
+           (dir1==="up" || dir1 === "down") &&
+           (dir2==="left" || dir2 === "right")) {
+            this.intersections.push({x:x,y:y,openPaths:openPaths});
+           }
+        }
       }
-
-      this.multiplierText.setText(`Multiplier: x${this.scoreMultiplier.toFixed(2)}`);
     }
   }
 
+  isPathOpenAroundPoint(pixelX,pixelY) {
+    const corners = [
+      {x:pixelX-1,y:pixelY-1},
+      {x:pixelX+1,y:pixelY-1},
+      {x:pixelX-1,y:pixelY+1},
+      {x:pixelX+1,y:pixelY+1},
+    ];
+    return corners.every((corner)=>{
+      const tileX = Math.floor(corner.x/this.blockSize);
+      const tileY = Math.floor(corner.y/this.blockSize);
+      if(!this.board[tileY]|| this.board[tileY][tileX]!==-1) {
+        return false;
+      }
+      return true;
+    });
+  }
+  isPointClear(x,y) {
+    const corners = [
+      {x:x-1,y:y-1},
+      {x:x+1,y:y-1},
+      {x:x-1,y:y+1},
+      {x:x+1,y:y+1},
+    ]; 
+    return corners.every((corner)=>{
+      const tileX = Math.floor(corner.x/this.blockSize);
+      const tileY = Math.floor(corner.y/this.blockSize);
+     
+      return !this.board[tileY] || this.board[tileY][tileX] === -1;
+    });
+  }
 
-  update(time, delta) {
-    if (!this.isPacmanAlive || this.lives === 0)
+  
+ handlePacmanGhostCollision(pacman,ghost) {
+   if(this.currentMode === "scared" && !ghost.hasBeenEaten) {
+    ghost.setActive(false);
+    ghost.setVisible(false);
+    this.time.delayedCall(1000,()=>{
+      this.respawnGhost(ghost);
+    });
+   } else if (ghost.hasBeenEaten) {
+    characterDeath.pacmanDies.call(this);
+   }
+ }
+  
+
+ resetGhosts() {
+  this.redGhost.setPosition(232,290);
+  this.pinkGhost.setPosition(220,290);
+  this.blueGhost.setPosition(255,290);
+  this.orangeGhost.setPosition(210,290);
+  
+  this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
+  
+  this.ghosts.forEach(ghost => {
+    ghost.setTexture(ghost.originalTexture);
+    ghost.hasBeenEaten = true;
+    ghost.enteredMaze = false;
+    clearInterval(ghost.blinkInterval);
+    let target = GhostBehavior.getScatterTarget.call(this, ghost);
+    GhostBehavior.updateGhostPath.call(this, ghost,target);
+    ghost.direction = "left";
+  });
+  EnemyMovement.startGhostEntries.call(this);
+  GhostBehavior.setModeTimer.call(this, this.scatterModeDuration);
+  this.currentMode = "scatter";
+  this.previouseMode = this.currentMode;
+ }
+
+respawnGhost(ghost) {
+  ghost.setPosition(232,290);
+  ghost.setActive(true);
+  ghost.setVisible(true);
+  ghost.setTexture(ghost.originalTexture);
+  ghost.hasBeenEaten = true;
+  EnemyMovement.enterMaze.call(this, ghost);
+  let target = this.currentMode === "chase" ?
+  GhostBehavior.getChaseTarget.call(this, ghost) : GhostBehavior.getScatterTarget.call(this, ghost);
+  GhostBehavior.updateGhostPath.call(this, ghost,target);
+}
+
+  update() {
+    
+    if (this.isStarting) return;
+
+    if(!this.isPacmanAlive || this.lives === 0)
       return;
 
     Movement.handleDirectionInput.call(this);

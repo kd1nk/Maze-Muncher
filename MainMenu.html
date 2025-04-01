@@ -1,49 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze Muncher</title>
-  <link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Muncher</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container" id="mainMenuContainer">
-    <button class="credits-button" onclick="viewCredits()">Credits</button>
-    <div  id="mainMenu" class="menu">
-      <h1>Maze Muncher</h1>
-      <button onclick="startGame()">Start Game</button>
-      <button onclick="showSettings()">Settings</button>
-      <button onclick="viewLeaderboard()">Leaderboard</button>
-      <button onclick="exitGame()">Exit Game</button>
+    <div class="container" id="mainMenuContainer">
+        <button class="credits-button" onclick="viewCredits()">Credits</button>
+        <div id="mainMenu" class="menu">
+            <h1>Maze Muncher</h1>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="showSettings()">Settings</button>
+            <button onclick="viewLeaderboard()">Leaderboard</button>
+            <button onclick="exitGame()">Exit Game</button>
+        </div>
+
+        <div id="settingsScreen" class="menu" style="display: none;">
+            <h1>Settings</h1>
+            <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
+            <button onclick="accessibilityMenu()">Accessibility Options</button>
+            <button onclick="goBack()">Back</button>
+        </div>
+
+        <div id="accessibilityScreen" class="menu" style="display: none;">
+            <h1>Accessibility Options</h1>
+            <button onclick="setColorBlindMode('normal')">Normal</button>
+            <button onclick="setColorBlindMode('deuteranopia')">Deuteranopia</button>
+            <button onclick="setColorBlindMode('protanopia')">Protanopia</button>
+            <button onclick="setColorBlindMode('tritanopia')">Tritanopia</button>
+            <button onclick="goBack()">Back</button>
+        </div>
+
+        <div id="volumeScreen" class="menu" style="display: none;">
+            <h1>Volume</h1>
+            <label for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="100">
+            <button onclick="goBack()">Back</button>
+        </div>
+
+        
+        <div id="leaderboardScreen" class="menu" style="display: none;">
+            <h1>Leaderboard</h1>
+            <ul id="leaderboardList">
+                </ul>
+            <button onclick="goBack()">Back</button>
+        </div>
+
+        <div class="fence"></div>
     </div>
-
-    <div id="settingsScreen" class="menu" style="display: none;">
-      <h1>Settings</h1>
-      <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
-      <button onclick="accessibilityMenu()">Accessibility Options</button>
-      <button onclick="goBack()">Back</button>
-    </div>
-
-    <div id="accessibilityScreen" class="menu" style="display: none;">
-      <h1>Accessibility Options</h1>
-      <button onclick="setColorBlindMode('normal')">Normal</button>
-      <button onclick="setColorBlindMode('deuteranopia')">Deuteranopia</button>
-      <button onclick="setColorBlindMode('protanopia')">Protanopia</button>
-      <button onclick="setColorBlindMode('tritanopia')">Tritanopia</button>
-      <button onclick="goBack()">Back</button>
-    </div>
-
-    <div id="volumeScreen" class="menu" style="display: none;">
-      <h1>Volume</h1>
-      <label for="volume">Volume:</label>
-      <input type="range" id="volume" min="0" max="100">
-      <button onclick="goBack()">Back</button>
-    </div>
-
-  </div>
-  <div class="fence"></div> </div>
-
-  <script src="mainMenu.js"></script>
+    <script src="mainMenu.js"></script>
 </body>
 </html>
