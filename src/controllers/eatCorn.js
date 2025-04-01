@@ -16,3 +16,19 @@ export function eatPowerPill(pacman, powerPill) {
         ghost.hasBeenEaten = false;
     });
 }
+
+//update score multiplier
+export function updateMultiplier(delta) {
+    this.timeElapsed += delta;
+
+    if (this.timeElapsed >= 1000) {
+        this.timeElapsed = 0;
+
+        if (this.scoreMultiplier > 1) {
+            this.scoreMultiplier -= this.decreaseRate;
+            this.scoreMultiplier = Math.max(this.scoreMultiplier, 1.00);
+        }
+
+        this.multiplierText.setText(`Multiplier: x${this.scoreMultiplier.toFixed(2)}`);
+    }
+}

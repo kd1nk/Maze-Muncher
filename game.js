@@ -1,10 +1,10 @@
-import * as Movement from "./src/controllers/characterMovement.js";
-import * as GhostBehavior from "./src/controllers/ghostBehaviors.js";
-//import * as CharacterDeath from "./src/controllers/characterDeath.js";
+import * as CharacterMovement from "./src/controllers/characterMovement.js";
+import * as EnemyBehavior from "./src/controllers/ghostBehaviors.js";
 import * as EnemyMovement from "./src/controllers/enemyMovement.js";
 import * as MazeUtils from "./src/controllers/mazeUtils.js";
 import * as EnemyDeath from "./src/controllers/enemyDeath.js";
 import * as EatCorn from "./src/controllers/eatCorn.js";
+import * as GameScreens from "./src/controllers/gameScreens.js";
 
 
 class Pacman extends Phaser.Scene {
@@ -33,7 +33,7 @@ class Pacman extends Phaser.Scene {
     this.respawnDelay = 5000;
     this.modeTimer = null;
     this.currentMode = "scatter";
-    GhostBehavior.initModeTimers.call(this);
+    EnemyBehavior.initModeTimers.call(this);
 
     this.lives = 3;
     this.isPacmanAlive = true;
@@ -117,7 +117,7 @@ class Pacman extends Phaser.Scene {
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
   }
   create() {
-    this.createStartCountdown();
+    GameScreens.createStartCountdown.call(this);
 
     this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
@@ -196,16 +196,16 @@ class Pacman extends Phaser.Scene {
     MazeUtils.detectIntersections.call(this);
     EnemyMovement.initializeGhosts.call(this, layer);
     let startPoint = { x: 232, y: 240 };
-    this.pinkGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint, this.PINKY_SCATTER_TARGET);
+    this.pinkGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.PINKY_SCATTER_TARGET);
     this.pinkGhost.nextIntersection = this.pinkGhost.path.shift();
 
-    this.blueGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint, this.INKY_SCATTER_TARGET);
+    this.blueGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.INKY_SCATTER_TARGET);
     this.blueGhost.nextIntersection = this.blueGhost.path.shift();
 
-    this.orangeGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint, this.CLYDE_SCATTER_TARGET);
+    this.orangeGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.CLYDE_SCATTER_TARGET);
     this.orangeGhost.nextIntersection = this.orangeGhost.path.shift();
 
-    this.redGhost.path = GhostBehavior.aStarAlgorithm.call(this, startPoint, this.BLINKY_SCATTER_TARGET);
+    this.redGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.BLINKY_SCATTER_TARGET);
     this.redGhost.nextIntersection = this.redGhost.path.shift();
 
     this.ghosts = [this.pinkGhost, this.redGhost, this.orangeGhost, this.blueGhost];
@@ -233,116 +233,9 @@ class Pacman extends Phaser.Scene {
     });
 
     // Pause menu scene
-    this.input.keyboard.on('keydown-P', () => {
-      this.scene.launch('PauseMenu');  // Start the pause menu scene
-      this.scene.pause();              // Pause the current scene
-    });
+    GameScreens.pauseMenu.call(this);
   }
 
-      //update score multiplier
-      updateMultiplier(delta) {
-        this.timeElapsed += delta;
-  
-        if (this.timeElapsed >= 1000) {
-          this.timeElapsed = 0;
-  
-          if (this.scoreMultiplier > 1) {
-            this.scoreMultiplier -= this.decreaseRate;
-            this.scoreMultiplier = Math.max(this.scoreMultiplier, 1.00);
-          }
-  
-          this.multiplierText.setText(`Multiplier: x${this.scoreMultiplier.toFixed(2)}`);
-        }
-      }
-
-    createStartCountdown() {
-      const { width, height } = this.scale;
-      let count = 3;
-    
-      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
-    
-      const countdownText = this.add.text(width / 2, height / 2, count, {
-        fontSize: '100px',
-        color: '#ffffff',
-        fontFamily: 'Chewy'
-      }).setOrigin(0.5).setDepth(11);
-    
-      this.time.addEvent({
-        delay: 1000,
-        repeat: 3,
-        callback: () => {
-          count--;
-          if (count > 0) {
-            countdownText.setText(count);
-          } else if (count === 0) {
-            countdownText.setText("GO!");
-          } else {
-            this.tweens.add({
-              targets: [overlay, countdownText],
-              alpha: 0,
-              duration: 500,
-              onComplete: () => {
-                overlay.destroy();
-                countdownText.destroy();
-                this.isStarting = false;
-              }
-            });
-          }
-        }
-      });
-    }
-    
-    endGame(outcome) {
-      const { width, height } = this.scale;
-    
-      const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);
-    
-      this.tweens.add({
-        targets: overlay,
-        alpha: 0.8,
-        duration: 800,
-        onComplete: () => {
-          const isWin = outcome === 'win';
-          const message = isWin ? 'You Win!' : 'Game Over';
-          const color = isWin ? '#00ff00' : '#ff0000';
-    
-          const resultText = this.add.text(width / 2, height / 2 - 60, message, {
-            fontSize: '64px',
-            color,
-            fontFamily: 'Chewy'
-          }).setOrigin(0.5).setDepth(11);
-    
-          const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
-            fontSize: '28px',
-            backgroundColor: '#fff',
-            color: '#000',
-            padding: { x: 20, y: 10 },
-            fontFamily: 'Chewy'
-          }).setOrigin(0.5).setDepth(11).setInteractive();
-    
-          returnBtn.on('pointerdown', () => {
-            window.location.href = 'mainMenu.html';
-          });
-    
-          if (!isWin) {
-            const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
-              fontSize: '28px',
-              backgroundColor: '#fff',
-              color: '#000',
-              padding: { x: 20, y: 10 },
-              fontFamily: 'Chewy'
-            }).setOrigin(0.5).setDepth(11).setInteractive();
-    
-            tryAgainBtn.on('pointerdown', () => {
-              this.scene.restart();
-            });
-          }
-        }
-      });
-    
-      this.physics.pause();
-      this.isPacmanAlive = false;
-    }
 
   update(time, delta) {
     
@@ -351,9 +244,9 @@ class Pacman extends Phaser.Scene {
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 
-    Movement.handleDirectionInput.call(this);
-    Movement.handlePacmanMovement.call(this);
-    Movement.teleportPacmanAcrossWorldBounds.call(this);
+    CharacterMovement.handleDirectionInput.call(this);
+    CharacterMovement.handlePacmanMovement.call(this);
+    CharacterMovement.teleportPacmanAcrossWorldBounds.call(this);
 
     if (this.pinkGhost.enteredMaze) {
       EnemyMovement.handleGhostDirection.call(this, this.pinkGhost);
@@ -372,7 +265,7 @@ class Pacman extends Phaser.Scene {
       EnemyMovement.handleGhostMovement.call(this, this.redGhost);
     }
     //updating multiplier
-    this.updateMultiplier(delta);
+    EatCorn.updateMultiplier.call(this, delta);
   }
 }
 

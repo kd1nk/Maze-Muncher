@@ -1,4 +1,5 @@
 import { resetGhosts } from "./enemyDeath.js";
+import { createStartCountdown, endGame } from "./gameScreens.js"; // Ensure this import is correct
 
 export function pacmanDies() {
     if (!this.isPacmanAlive)
@@ -29,10 +30,10 @@ export function resetAfterDeath() {
   
       // Show countdown screen before resuming
       this.isStarting = true;
-      this.createStartCountdown(); // <-- make sure this method exists in your scene
+      createStartCountdown.call(this); 
     } else {
       // Game over
-      this.endGame("lose"); // <-- make sure this method exists in your scene
+      endGame.call(this, "lose"); 
     }
   }
   
