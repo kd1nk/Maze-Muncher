@@ -10,7 +10,7 @@ export function pacmanDies() {
     this.isPacmanAlive = false;
     this.pacman.anims.stop();
 
-    this.pacman.play("pacmanDeath");
+    this.pacman.play("farmBoyDeath", true);
     this.time.delayedCall(2000, () => {
         resetAfterDeath.call(this);
     });

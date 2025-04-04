@@ -80,13 +80,13 @@ class Pacman extends Phaser.Scene {
 
 
     //Death Animation
-    this.load.spritesheet("pacmanDeath1", "assets/pac man & life counter & death/pac man death/spr_pacdeath_0.png", {
+    this.load.spritesheet("farmBoyDeath1", "assets/Farm boy/Farm boy-death-1.png", {
       frameWidth: 32, frameHeight: 32
     });
-    this.load.spritesheet("pacmanDeath2", "assets/pac man & life counter & death/pac man death/spr_pacdeath_1.png", {
+    this.load.spritesheet("farmBoyDeath2", "assets/Farm boy/Farm boy-death-2.png", {
       frameWidth: 32, frameHeight: 32
     });
-    this.load.spritesheet("pacmanDeath3", "assets/pac man & life counter & death/pac man death/spr_pacdeath_2.png", {
+    this.load.spritesheet("farmBoyDeath3", "assets/Farm boy/Farm boy-death-3.png", {
       frameWidth: 32, frameHeight: 32
     });
 
@@ -175,13 +175,13 @@ class Pacman extends Phaser.Scene {
 
 
     this.anims.create({
-      key: "pacmanDeath",
+      key: "farmBoyDeath",
       frames: [
-        { key: "pacmanDeath1" },
-        { key: "pacmanDeath2" },
-        { key: "pacmanDeath3" },
+        { key: "farmBoyDeath1" },
+        { key: "farmBoyDeath2" },
+        { key: "farmBoyDeath3" },
       ],
-      frameRate: 10,
+      frameRate: 3,
       repeat: 0
     });
 
@@ -216,14 +216,14 @@ class Pacman extends Phaser.Scene {
     this.lifeCounter1 = this.add.image(32, 32, "Farm boy0");
     this.lifeCounter2 = this.add.image(56, 32, "Farm boy0");
 
-    //HERE IS OUR SCORE TRACKER
+    //SCORE TRACKER
     this.score = 0;
     this.scoreText = this.add.text(this.cameras.main.width / 2, 8, 'Score: 0', {
       fontSize: '18px',
       fill: '#fff'
     }).setOrigin(0.5, 0);
 
-    //HERE IS OUR TIMER AND BY PROXY, SCORE MULTIPLIER. CURRENTLY NOT WORKING.
+    //TIMER AND BY PROXY, SCORE MULTIPLIER. CURRENTLY NOT WORKING.
     this.scoreMultiplier = 5.00;
     this.timeElapsed = 0;
     this.decreaseRate = 0.05;
