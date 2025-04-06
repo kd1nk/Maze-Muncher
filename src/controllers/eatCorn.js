@@ -1,10 +1,27 @@
 import * as GhostBehavior from "./ghostBehaviors.js";
+import { endGame } from "./gameScreens.js";
 
 export function eatDot(pacman, dot) {
     dot.disableBody(true, true);
     this.score += 100;
     this.scoreText.setText('Score: ' + this.score);
+
+    // debug
+    // console.log("Remaining dots:", this.dots.countActive(true)); 
+    // this.dots.getChildren().forEach(dot => {
+    //     if (dot.active) {
+    //         console.log(`🟡 Still active: (${dot.x}, ${dot.y})`);
+    //     }
+    // });
+    
+
+    // Check for win
+    if (this.dots.countActive(true) === 0) {
+        console.log("ALL DOTS EATEN!");
+        endGame.call(this, "win");  // this line triggers the win screen
+    }
 }
+  
 
 export function eatPowerPill(pacman, powerPill) {
     powerPill.disableBody(true, true);

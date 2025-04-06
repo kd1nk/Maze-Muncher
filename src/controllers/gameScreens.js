@@ -1,39 +1,41 @@
-export function createStartCountdown() {
+export function createStartCountdown(onComplete) {
     const { width, height } = this.scale;
     let count = 3;
-
+  
     const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
-
+  
     const countdownText = this.add.text(width / 2, height / 2, count, {
-        fontSize: '100px',
-        color: '#ffffff',
-        fontFamily: 'Chewy'
+      fontSize: '100px',
+      color: '#ffffff',
+      fontFamily: 'Chewy'
     }).setOrigin(0.5).setDepth(11);
-
+  
     this.time.addEvent({
-        delay: 1000,
-        repeat: 3,
-        callback: () => {
-            count--;
-            if (count > 0) {
-                countdownText.setText(count);
-            } else if (count === 0) {
-                countdownText.setText("GO!");
-            } else {
-                this.tweens.add({
-                    targets: [overlay, countdownText],
-                    alpha: 0,
-                    duration: 500,
-                    onComplete: () => {
-                        overlay.destroy();
-                        countdownText.destroy();
-                        this.isStarting = false;
-                    }
-                });
+      delay: 1000,
+      repeat: 3,
+      callback: () => {
+        count--;
+        if (count > 0) {
+          countdownText.setText(count);
+        } else if (count === 0) {
+          countdownText.setText("GO!");
+        } else {
+          this.tweens.add({
+            targets: [overlay, countdownText],
+            alpha: 0,
+            duration: 500,
+            onComplete: () => {
+              overlay.destroy();
+              countdownText.destroy();
+              if (onComplete) onComplete(); // <- ✅ Call the callback
             }
+          });
         }
+      }
     });
-}
+  }
+  
+
 
 export function endGame(outcome) {
     const { width, height } = this.scale;
@@ -77,8 +79,17 @@ export function endGame(outcome) {
                 }).setOrigin(0.5).setDepth(11).setInteractive();
 
                 tryAgainBtn.on('pointerdown', () => {
+                    // Reset flags BEFORE restarting
+                    this.isStarting = true;
+                    this.isPacmanAlive = true;
+                    this.hasRespawned = false;
+                    this.lives = 3;
+                    this.score = 0;
                     this.scene.restart();
                 });
+                
+                
+                
             }
         }
     });

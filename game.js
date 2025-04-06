@@ -117,13 +117,20 @@ class Pacman extends Phaser.Scene {
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
   }
   create() {
-    GameScreens.createStartCountdown.call(this);
 
+    GameScreens.createStartCountdown.call(this, () => {
+      // This runs after the countdown finishes
+      this.isPacmanAlive = true;
+      this.isStarting = false;
+      EnemyMovement.startGhostEntries.call(this);
+    });
+  
     this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
     const layer = this.map.createLayer("Tile Layer 1", [tileset]);
     layer.setCollisionByExclusion(-1, true);
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
+    
 
     this.anims.create({
       key: "neutral",
@@ -189,7 +196,13 @@ class Pacman extends Phaser.Scene {
     this.physics.add.collider(this.pacman, layer);
     this.dots = this.physics.add.group();
     this.powerPills = this.physics.add.group();
+    // this.dots.clear(true, true);
+    // this.powerPills.clear(true, true);
+    this.dotPositions = new Set();  // Reset so it can add fresh dots
+    this.board = [];                // Reset the board too
     MazeUtils.populateBoardAndTrackEmptyTiles.call(this, layer);
+    // console.log("Dots at start:", this.dots.getChildren().length); // Debug
+
     this.physics.add.overlap(this.pacman, this.dots, EatCorn.eatDot, null, this);
     this.physics.add.overlap(this.pacman, this.powerPills, EatCorn.eatPowerPill, null, this);
     this.cursors = this.input.keyboard.createCursorKeys();
