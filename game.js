@@ -1,3 +1,5 @@
+
+// Import modules for handling character movement, enemy behavior/movement, maze utilities, enemy death, pellet consumption, and game screens.
 import * as CharacterMovement from "./src/controllers/characterMovement.js";
 import * as EnemyBehavior from "./src/controllers/ghostBehaviors.js";
 import * as EnemyMovement from "./src/controllers/enemyMovement.js";
@@ -10,6 +12,7 @@ import * as GameScreens from "./src/controllers/gameScreens.js";
 class Pacman extends Phaser.Scene {
   constructor() {
     super({ key: 'Pacman' });
+    // Initialize properties for the scene.
     this.Pacman = null;
     this.direction = "null";
     this.previousDirection = "left";
@@ -21,11 +24,13 @@ class Pacman extends Phaser.Scene {
     this.nextIntersection = null;
     this.oldNextIntersection = null;
 
+    // Define scatter targets for the enemies (using your predefined coordinates)
     this.PINKY_SCATTER_TARGET = { x: 432, y: 80 };
     this.BLINKY_SCATTER_TARGET = { x: 32, y: 80 };
     this.INKY_SCATTER_TARGET = { x: 432, y: 528 };
     this.CLYDE_SCATTER_TARGET = { x: 32, y: 528 };
 
+    // Define durations for different game modes
     this.scatterModeDuration = 7000;
     this.chaseModeDuration = 20000;
     this.scaredModeDuration = 9000;
@@ -33,8 +38,11 @@ class Pacman extends Phaser.Scene {
     this.respawnDelay = 5000;
     this.modeTimer = null;
     this.currentMode = "scatter";
+
+    // Initialize game state variables
     EnemyBehavior.initModeTimers.call(this);
 
+    // Initialize lives and game state
     this.lives = 3;
     this.isPacmanAlive = true;
     this.hasRespawned = false
@@ -49,7 +57,7 @@ class Pacman extends Phaser.Scene {
     this.load.image("pacman tileset", "assets/pac man tiles/tileset.png");
     this.load.tilemapTiledJSON("map", "assets/pacman-map.json");
 
-    //Enter Farm Boy
+    //Farm Boy Sprites
     this.load.spritesheet("Farm boy0", "assets/Farm boy/Farm boy-0.png", {
       frameWidth: 32, frameHeight: 32
     });
@@ -91,11 +99,11 @@ class Pacman extends Phaser.Scene {
     });
 
 
-    // Pellets|Power Pellets
+    // Kernels|Power Beans
     this.load.image("dot", "assets/pacman items/Corn Kernel-large.png");
     this.load.image("powerPill", "assets/pacman items/Power Bean.png");
 
-
+    // Load enemy sprites (for the enemy types).
     this.load.spritesheet("pinkGhost", "assets/ghost/pink ghost/spr_ghost_pink_0.png", {
       frameWidth: 32, frameHeight: 32
     });
@@ -124,14 +132,17 @@ class Pacman extends Phaser.Scene {
       this.isStarting = false;
       EnemyMovement.startGhostEntries.call(this);
     });
-  
+    // Create the tilemap and assign the tileset.
     this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
+    // Create the layer and set collision properties.
     const layer = this.map.createLayer("Tile Layer 1", [tileset]);
     layer.setCollisionByExclusion(-1, true);
+    // Create the player character and enable physics
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
     
 
+    // Create animations for the character.
     this.anims.create({
       key: "neutral",
       frames: [
@@ -180,7 +191,7 @@ class Pacman extends Phaser.Scene {
       repeat: -1
     });
 
-
+    // Create the character's death animation.
     this.anims.create({
       key: "farmBoyDeath",
       frames: [
@@ -192,10 +203,13 @@ class Pacman extends Phaser.Scene {
       repeat: 0
     });
 
-
+    // Create the enemies and set their properties.
     this.physics.add.collider(this.pacman, layer);
+
+    // Create the ghosts and set their properties.
     this.dots = this.physics.add.group();
     this.powerPills = this.physics.add.group();
+
     // this.dots.clear(true, true);
     // this.powerPills.clear(true, true);
     this.dotPositions = new Set();  // Reset so it can add fresh dots
@@ -203,6 +217,7 @@ class Pacman extends Phaser.Scene {
     MazeUtils.populateBoardAndTrackEmptyTiles.call(this, layer);
     // console.log("Dots at start:", this.dots.getChildren().length); // Debug
 
+    // Create the ghosts and set their properties.
     this.physics.add.overlap(this.pacman, this.dots, EatCorn.eatDot, null, this);
     this.physics.add.overlap(this.pacman, this.powerPills, EatCorn.eatPowerPill, null, this);
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -221,8 +236,10 @@ class Pacman extends Phaser.Scene {
     this.redGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.BLINKY_SCATTER_TARGET);
     this.redGhost.nextIntersection = this.redGhost.path.shift();
 
+    // Set the initial direction for the ghosts.
     this.ghosts = [this.pinkGhost, this.redGhost, this.orangeGhost, this.blueGhost];
 
+    // Set the initial direction for the ghosts.
     this.ghosts.forEach(ghost => {
       this.physics.add.overlap(this.pacman, ghost, EnemyDeath.handlePacmanGhostCollision, null, this);
     });
@@ -251,16 +268,19 @@ class Pacman extends Phaser.Scene {
 
 
   update(time, delta) {
-    
+    // Update the score text display with the current score.
     if (this.isStarting) return;
 
+    // Update the score text display with the current score.
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 
+    // Update the score text display with the current score.
     CharacterMovement.handleDirectionInput.call(this);
     CharacterMovement.handlePacmanMovement.call(this);
     CharacterMovement.teleportPacmanAcrossWorldBounds.call(this);
 
+    // Update the ghost movement and behavior based on their current state.
     if (this.pinkGhost.enteredMaze) {
       EnemyMovement.handleGhostDirection.call(this, this.pinkGhost);
       EnemyMovement.handleGhostMovement.call(this, this.pinkGhost);
@@ -282,6 +302,7 @@ class Pacman extends Phaser.Scene {
   }
 }
 
+// Create a new Phaser game instance with the specified configuration.
 const config = {
   type: Phaser.AUTO,
   width: 464,

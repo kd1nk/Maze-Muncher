@@ -1,40 +1,58 @@
 
-//figure this one out
+// Initializes the mode timer by starting it with the scatter duration.
+// This method is called at scene startup to schedule the first mode switch.
 export function initModeTimers() {
+    // Begin the timer using the scatterModeDuration as the initial delay.
     setModeTimer.call(this, this.scatterModeDuration);
 }
 
 
-
+// Sets up a timer that will trigger a mode switch after a given duration.
+// The timer is stored in the scene’s modeTimer property.
 export function setModeTimer(duration) {
     console.log("setModeTimer called with duration:", duration);
+    // If there's already a mode timer running, clear it.
     if (this.modeTimer) {
-      clearTimeout(this.modeTimer);
+        clearTimeout(this.modeTimer);
     }
+    // Set a new timer. When it expires, call switchMode.
     this.modeTimer = setTimeout(() => {
-      console.log("Timer expired; calling switchMode");
-      switchMode.call(this);
+        console.log("Timer expired; calling switchMode");
+        switchMode.call(this);
     }, duration);
-  }
+}
 
 
-// Switch between ghost modes (scared, scatter, chase)
+// Switches between enemy modes: scared, scatter, and chase.
+// Based on the current mode, it updates the mode, resets enemy speed,
+// and updates each enemy's path accordingly.
 export function switchMode() {
     if (this.currentMode === "scared") {
+        // If currently scared, revert to the previous mode or default to scatter.
         this.currentMode = this.previouseMode || "scatter";
+
+        // Restart the mode timer using the duration associated with the new mode.
         setModeTimer.call(this, this[this.currentMode + "ModeDuration"]);
+
+        // Reset enemy speed to 70% of the character's speed.
         this.ghostSpeed = this.speed * 0.7;
-        this.ghosts.forEach((ghost) => {
-            clearInterval(ghost.blinkInterval);
-            ghost.setTexture(ghost.originalTexture);
+
+        // For each enemy, clear any blinking intervals, reset its texture, and recalculate its path.
+        this.ghosts.forEach((enemy) => {
+            clearInterval(enemy.blinkInterval);
+            enemy.setTexture(enemy.originalTexture);
+
+            // Choose target based on mode: if in chase mode, use chase target; otherwise, use scatter target.
             let target =
                 this.currentMode === "chase"
-                    ? getChaseTarget.call(this, ghost)
-                    : getScatterTarget.call(this, ghost);
-            updateGhostPath.call(this, ghost, target);
-            ghost.hasBeenEaten = true;
+                    ? getChaseTarget.call(this, enemy)
+                    : getScatterTarget.call(this, enemy);
+            // Update the enemy's path based on the chosen target.
+            updateGhostPath.call(this, enemy, target);
+            enemy.hasBeenEaten = true;
         });
     } else {
+        // If not scared, toggle between scatter and chase modes.
         if (this.currentMode === "scatter") {
             this.currentMode = "chase";
             setModeTimer.call(this, this.chaseModeDuration);
@@ -42,6 +60,7 @@ export function switchMode() {
             this.currentMode = "scatter";
             setModeTimer.call(this, this.scatterModeDuration);
         }
+        // For each enemy, recalculate its path based on the new mode.
         this.ghosts.forEach((ghost) => {
             let target =
                 this.currentMode === "chase"
@@ -49,16 +68,21 @@ export function switchMode() {
                     : getScatterTarget.call(this, ghost);
             updateGhostPath.call(this, ghost, target);
         });
+        // Save the current mode as the previous mode.
         this.previouseMode = this.currentMode;
     }
 }
 
-// Calculate the chase target for a ghost based on its type
-export function getChaseTarget(ghost) {
-    if (ghost.texture.key === "redGhost") {
+
+// Calculates the chase target for an enemy based on its type.
+// Different enemy types may use different strategies to target the character.
+export function getChaseTarget(enemy) {
+    if (enemy.texture.key === "redGhost") {
+        // For red enemies, simply target the character's current position.
         return { x: this.pacman.x, y: this.pacman.y };
     }
-    if (ghost.texture.key === "pinkGhost") {
+    if (enemy.texture.key === "pinkGhost") {
+        // For pink enemies, use an offset from the character's position.
         const offset = this.blockSize * 4;
         switch (this.direction) {
             case "right":
@@ -73,16 +97,18 @@ export function getChaseTarget(ghost) {
                 return { x: this.pacman.x, y: this.pacman.y };
         }
     }
-    if (ghost.texture.key === "orangeGhost") {
+    if (enemy.texture.key === "orangeGhost") {
+        // For orange enemies, if the distance to the character is large, chase directly; otherwise, use a scatter target
         const distance = Math.hypot(
-            ghost.x - this.pacman.x,
-            ghost.y - this.pacman.y
+            enemy.x - this.pacman.x,
+            enemy.y - this.pacman.y
         );
         return distance > this.blockSize * 8
             ? { x: this.pacman.x, y: this.pacman.y }
             : this.CLYDE_SCATTER_TARGET;
     }
-    if (ghost.texture.key === "blueGhost") {
+    if (enemy.texture.key === "blueGhost") {
+        // For blue enemies, calculate a target based on a vector from another enemy (red) to a point ahead of the character.
         const blinky = this.redGhost;
         let pacmanAhead = { x: this.pacman.x, y: this.pacman.y };
         const aheadOffset = this.blockSize * 2;
@@ -139,16 +165,21 @@ export function updateGhostPath(ghost, chaseTarget) {
 }
 
 
-//figure this one out
+// Checks if a given position (x, y) is within the enemy house (the central area where enemies are confined).
 export function isInghostHouse(x, y) {
     if ((x <= 262 && x >= 208) && (y <= 290 && y > 240))
         return true;
     else return false;
 }
 
+
+// Implements the A* pathfinding algorithm to find a path from start to target using the intersections grid.
+// It uses Manhattan distance as a heuristic.
 export function aStarAlgorithm(start, target) {
+    // Bind the isInghostHouse function to the scene context.
     const isInGhostHouse = isInghostHouse.bind(this);
 
+    // Helper function to find the nearest intersection to a point.
     function findNearestIntersection(point, intersections) {
         let nearest = null;
         let minDist = Infinity;
@@ -156,6 +187,7 @@ export function aStarAlgorithm(start, target) {
             if (isInGhostHouse(intersection.x, intersection.y)) {
                 continue;
             }
+            // Calculate Manhattan distance
             const dist = Math.abs(intersection.x - point.x) + Math.abs(intersection.y - point.y);
             if (dist < minDist) {
                 minDist = dist;
@@ -165,25 +197,33 @@ export function aStarAlgorithm(start, target) {
         return nearest;
     }
 
+    // Find the nearest intersection to the start and target points.
     const startIntersection = findNearestIntersection.call(this, start, this.intersections);
+
+    // If the target is not a valid intersection, find the nearest one.
     target = findNearestIntersection.call(this, target, this.intersections);
 
+    // If no valid start or target intersection is found, return an empty path.
     if (!startIntersection || !target) {
         return [];
     }
 
+    // A* algorithm implementation
     const openList = [];
     const closedList = new Set();
     const cameFrom = new Map();
     const gScore = new Map();
 
+    // Initialize the open list with the start intersection.
     openList.push({ node: startIntersection, g: 0, f: heuristic(startIntersection, target) });
     gScore.set(JSON.stringify(startIntersection), 0);
 
+    // Heuristic function for A* (Manhattan distance).
     function heuristic(node, target) {
         return Math.abs(node.x - target.x) + Math.abs(node.y - target.y);
     }
 
+    // Main A* loop
     while (openList.length > 0) {
         openList.sort((a, b) => a.f - b.f);
         const current = openList.shift().node;
@@ -199,17 +239,22 @@ export function aStarAlgorithm(start, target) {
             return path.reverse();
         }
 
+        // Add current node to closed list
         closedList.add(JSON.stringify(current));
 
+        // Get neighbors and evaluate them
         const currentIntersection = this.intersections.find(i => i.x === current.x && i.y === current.y);
 
+        // If the current intersection is valid, check its open paths
         if (currentIntersection) {
             for (const direction of currentIntersection.openPaths) {
                 const neighbor = getNextIntersection.call(this, current.x, current.y, direction);
 
+                // Check if the neighbor is valid and not in the closed list
                 if (neighbor && !isInGhostHouse(neighbor.x, neighbor.y) && !closedList.has(JSON.stringify(neighbor))) {
                     const tentativeGScore = gScore.get(JSON.stringify(current)) + 1;
 
+                    // If the neighbor is not in the open list or the new gScore is better, update it
                     if (!gScore.has(JSON.stringify(neighbor)) || tentativeGScore < gScore.get(JSON.stringify(neighbor))) {
                         gScore.set(JSON.stringify(neighbor), tentativeGScore);
                         const fScore = tentativeGScore + heuristic(neighbor, target);
@@ -220,17 +265,20 @@ export function aStarAlgorithm(start, target) {
             }
         }
     }
-
+    // If no path is found, return an empty array.
     return [];
 }
 
 
+// From all available intersections, returns the next intersection in a given direction from the current position.
 export function getNextIntersection(currentX, currentY, previousDirection) {
     let filteredIntersections;
     const isUp = previousDirection === "up";
     const isDown = previousDirection === "down";
     const isLeft = previousDirection === "left";
     const isRight = previousDirection === "right";
+
+    // Filter intersections based on the current position and direction.
     filteredIntersections = this.intersections.filter((intersection) => {
         return (
             ((isUp && intersection.x === currentX && intersection.y < currentY) ||
@@ -239,6 +287,7 @@ export function getNextIntersection(currentX, currentY, previousDirection) {
                 (isRight && intersection.y === currentY && intersection.x > currentX))
         );
     })
+        // Sort the filtered intersections based on the direction.
         .sort((a, b) => {
             if (isUp || isDown) {
                 return isUp ? b.y - a.y : a.y - b.y;
@@ -246,24 +295,31 @@ export function getNextIntersection(currentX, currentY, previousDirection) {
                 return isLeft ? b.x - a.x : a.x - b.x;
             }
         });
+    // Return the first intersection in the filtered list or null if none found.
     return filteredIntersections ? filteredIntersections[0] : null;
 }
 
 
-
+// Sets all enemies to their "scared" state.
+// For each enemy, updates the path to a random target, clears any existing blink intervals,
+// and then sets up a blinking effect before finalizing the scared texture.
 export function setGhostsToScaredMode() {
+    // Set the current mode to "scared" and update the previous mode.
     this.ghosts.forEach(ghost => {
         let scaredTarget = getScaredTarget.call(this);
         updateGhostPath.call(this, ghost, scaredTarget);
+        // Clear any existing blink intervals.
         if (ghost.blinkInterval)
             clearInterval(ghost.blinkInterval);
         const blinkTime = this.scaredModeDuration - 2000;
         ghost.blinkInterval = setTimeout(() => {
-
+            // Stop blinking after the scared mode duration.
             if (ghost.hasBeenEaten)
                 return;
 
             let blinkOn = true;
+
+            // Begin an interval to toggle between two scared textures.
             ghost.blinkInterval = setInterval(() => {
                 blinkOn = !blinkOn;
                 ghost.setTexture(blinkOn ? "scaredGhost" : "scaredGhostWhite");
