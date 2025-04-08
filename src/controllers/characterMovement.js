@@ -1,4 +1,4 @@
-// Handles the player's (Pacman's) directional input from the arrow keys.
+// Handles the player's (character's) directional input from the arrow keys.
 // It updates the current and previous direction, and determines the next intersection.
 export function handleDirectionInput() {
 
@@ -187,7 +187,7 @@ export function handleMovementInDirection(
       ? ["up", "down"]
       : ["left", "right"];
 
-  // Initialize a condition flag to decide if we should update Pacman's position.    
+  // Initialize a condition flag to decide if we should update character's position.    
   let condition = false;
 
   // Only compute the condition if a next intersection is defined.
@@ -200,7 +200,7 @@ export function handleMovementInDirection(
       this.previousDirection === oppositeDirection;
   }
   
-  // If the condition is true, adjust Pacman's position to snap to the intersection.
+  // If the condition is true, adjust character's position to snap to the intersection.
   if (condition) {
 
     // Define the new position along the movement axis (either x or y) as the intersection's coordinate.

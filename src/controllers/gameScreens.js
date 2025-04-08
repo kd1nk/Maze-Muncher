@@ -128,7 +128,7 @@ export function endGame(outcome) {
         }
     });
 
-    // Pause the physics and mark Pacman as not alive.
+    // Pause the physics and mark character as not alive.
     this.physics.pause();
     this.isPacmanAlive = false;
 }

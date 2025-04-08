@@ -77,11 +77,14 @@ export function switchMode() {
 // Calculates the chase target for an enemy based on its type.
 // Different enemy types may use different strategies to target the character.
 export function getChaseTarget(enemy) {
-    if (enemy.texture.key === "redGhost") {
+    if (enemy.type ==="cyanSheep") 
+        {
         // For red enemies, simply target the character's current position.
         return { x: this.pacman.x, y: this.pacman.y };
     }
-    if (enemy.texture.key === "pinkGhost") {
+    //old pink Ghost
+    if (enemy.type ==="whiteSheep")
+        {
         // For pink enemies, use an offset from the character's position.
         const offset = this.blockSize * 4;
         switch (this.direction) {
@@ -97,6 +100,7 @@ export function getChaseTarget(enemy) {
                 return { x: this.pacman.x, y: this.pacman.y };
         }
     }
+
     if (enemy.texture.key === "orangeGhost") {
         // For orange enemies, if the distance to the character is large, chase directly; otherwise, use a scatter target
         const distance = Math.hypot(
@@ -109,7 +113,7 @@ export function getChaseTarget(enemy) {
     }
     if (enemy.texture.key === "blueGhost") {
         // For blue enemies, calculate a target based on a vector from another enemy (red) to a point ahead of the character.
-        const blinky = this.redGhost;
+        const inky = this.blueGhost;
         let pacmanAhead = { x: this.pacman.x, y: this.pacman.y };
         const aheadOffset = this.blockSize * 2;
         switch (this.direction) {
@@ -126,9 +130,9 @@ export function getChaseTarget(enemy) {
                 pacmanAhead = { x: this.pacman.x, y: this.pacman.y + aheadOffset };
                 break;
         }
-        const vectorX = pacmanAhead.x - blinky.x;
-        const vectorY = pacmanAhead.y - blinky.y;
-        return { x: blinky.x + 2 * vectorX, y: blinky.y + 2 * vectorY };
+        const vectorX = pacmanAhead.x - inky.x;
+        const vectorY = pacmanAhead.y - inky.y;
+        return { x: inky.x + 2 * vectorX, y: inky.y + 2 * vectorY };
     }
 }
 
@@ -141,8 +145,10 @@ export function getScaredTarget(ghost) {
 
 // Returns the scatter target for a ghost based on its type
 export function getScatterTarget(ghost) {
-    if (ghost.texture.key === "redGhost") return this.BLINKY_SCATTER_TARGET;
-    if (ghost.texture.key === "pinkGhost") return this.PINKY_SCATTER_TARGET;
+/*     if (ghost.texture.key === "redGhost") return this.BLINKY_SCATTER_TARGET; */
+    if (ghost.texture.key === "whiteSheepRight-1") return this.WHITESHEEP_SCATTER_TARGET;
+    if (ghost.texture.key === "cyanSheepRight-1") return this.CYANSHEEP_SCATTER_TARGET;
+    /* if (ghost.texture.key === "pinkGhost") return this.PINKY_SCATTER_TARGET; */
     if (ghost.texture.key === "orangeGhost") return this.CLYDE_SCATTER_TARGET;
     if (ghost.texture.key === "blueGhost") return this.INKY_SCATTER_TARGET;
 }

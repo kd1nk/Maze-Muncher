@@ -3,18 +3,18 @@ import { createStartCountdown, endGame } from "./gameScreens.js"; // Ensure this
 
 
 /**
- * Handles Pacman's death sequence.
+ * Handles character's death sequence.
  * Stops movement, plays the death animation, and then calls resetAfterDeath after a delay.
  */
 export function pacmanDies() {
     if (!this.isPacmanAlive)
         return;
 
-     // Stop Pacman's movement.
+     // Stop character's movement.
     this.pacman.setVelocityY(0);
     this.pacman.setVelocityX(0);
 
-    // Mark Pacman as not alive and stop any current animations.
+    // Mark character as not alive and stop any current animations.
     this.isPacmanAlive = false;
     this.pacman.anims.stop();
 
@@ -29,7 +29,7 @@ export function pacmanDies() {
 
 
 /**
- * Handles the reset (respawn) of Pacman after death.
+ * Handles the reset (respawn) of character after death.
  * Decreases the life count, resets ghost positions, and initiates a countdown before restarting play.
  */
 export function resetAfterDeath() {
@@ -40,17 +40,17 @@ export function resetAfterDeath() {
   if (this.lives === 1) this.lifeCounter1.destroy();
   if (this.lives === 2) this.lifeCounter2.destroy();
 
-  // If Pacman still has lives remaining:
+  // If character still has lives remaining:
   if (this.lives > 0) {
     this.pacman.setPosition(230, 432);
 
     // Reset ghosts to their initial positions
     resetGhosts.call(this); 
-    
+
      // Reset game mode to "scatter" so ghosts are in scatter mode.
     this.currentMode = "scatter";
 
-    // Mark that Pacman has respawned.
+    // Mark that character has respawned.
     this.hasRespawned = true;
 
     // Set the game into a "starting" state (e.g., pause movement during countdown).
@@ -60,7 +60,7 @@ export function resetAfterDeath() {
     // Once the countdown completes, update the flags to resume play.
     createStartCountdown.call(this, () => {
       this.isStarting = false;
-      this.isPacmanAlive = true; // Mark Pacman as alive again.
+      this.isPacmanAlive = true; // Mark character as alive again.
     });
   } else {
     // If no lives remain, end the game with a "lose" condition.
