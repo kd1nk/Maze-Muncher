@@ -100,6 +100,17 @@ export function endGame(outcome) {
                 fontFamily: 'Chewy'
             }).setOrigin(0.5).setDepth(11);
 
+            // Leaderboard
+            // Delay the prompt to allow UI to render first
+            setTimeout(() => {
+              const playerName = prompt("Enter your name to save your score:");
+              if (playerName && this.score >= 0) {
+                  updateLeaderboard(playerName, this.score);
+                  console.log("Leaderboard updated with:", playerName, this.score);
+              }
+            }, 300);  // Give the UI a short moment to show before blocking
+
+
             // Create a button to return to the main menu.
             const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
                 fontSize: '28px',
