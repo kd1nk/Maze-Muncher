@@ -146,3 +146,4 @@ window.goBack = goBack;
 window.viewLeaderboard = viewLeaderboard;
 window.exitGame = exitGame;
 window.updateLeaderboardDisplay = updateLeaderboardDisplay;
+window.updateLeaderboard = updateLeaderboard;
