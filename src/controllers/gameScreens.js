@@ -21,7 +21,17 @@ export function createStartCountdown(onComplete) {
       fontSize: '100px',
       color: '#ffffff',
       fontFamily: 'Chewy'
-    }).setOrigin(0.5).setDepth(11);
+    }).setOrigin(0.5).setDepth(11).setName("countdown-text");
+
+//------------------------------------------------------------------------------------------------
+    //Used for testing jest.mock to mock the scene context
+        // Store countdown text on the scene and expose the scene globally.
+        this.countdownText = countdownText;
+        window.myScene = this;
+        
+        // Set a flag to indicate that the game is still starting.
+        this.isStarting = true;
+//------------------------------------------------------------------------------------------------
   
     // Create a timer event that fires every 1000ms (1 second), repeating 3 times.
     this.time.addEvent({
@@ -35,7 +45,7 @@ export function createStartCountdown(onComplete) {
           countdownText.setText(count);
         } else if (count === 0) {
           // When count reaches 0, display "GO!".
-          countdownText.setText("GO!");
+          countdownText.setText("3");
         } else {
           // After the countdown, fade out the overlay and text.
           this.tweens.add({

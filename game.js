@@ -27,8 +27,6 @@ class Pacman extends Phaser.Scene {
     // Define scatter targets for the enemies (using your predefined coordinates)
     this.WHITESHEEP_SCATTER_TARGET = { x: 432, y: 80 };
     this.CYANSHEEP_SCATTER_TARGET = { x: 32, y: 80 };
-   /*  this.PINKY_SCATTER_TARGET = { x: 432, y: 80 }; */
-/*     this.BLINKY_SCATTER_TARGET = { x: 32, y: 80 }; */
     this.INKY_SCATTER_TARGET = { x: 432, y: 528 };
     this.CLYDE_SCATTER_TARGET = { x: 32, y: 528 };
 
