@@ -1,5 +1,5 @@
 import { resetGhosts } from "./enemyDeath.js";
-import { createStartCountdown, endGame } from "./gameScreens.js"; // Ensure this import is correct
+import { createStartCountdown, endGame } from "./gameScreens.js"; 
 
 
 /**

@@ -45,7 +45,7 @@ export function createStartCountdown(onComplete) {
           countdownText.setText(count);
         } else if (count === 0) {
           // When count reaches 0, display "GO!".
-          countdownText.setText("3");
+          countdownText.setText("GO!");
         } else {
           // After the countdown, fade out the overlay and text.
           this.tweens.add({
