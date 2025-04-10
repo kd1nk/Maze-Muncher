@@ -1,4 +1,3 @@
-
 /**
  * Creates a countdown overlay before the game starts (or restarts).
  * It displays a full-screen overlay and a large countdown text,
@@ -8,162 +7,182 @@
  * @param {function} onComplete - A callback function to call when the countdown finishes.
  */
 export function createStartCountdown(onComplete) {
-    // Get the width and height of the game canvas from the scale manager.
-    const { width, height } = this.scale;
-    // Set the initial countdown value.
-    let count = 3;
-  
-    // Create a semi-transparent overlay that covers the entire screen.
-    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
-  
-    // Create a text object for the countdown, centered on the screen.
-    const countdownText = this.add.text(width / 2, height / 2, count, {
+  const { width, height } = this.scale;
+  let count = 3;
+
+  const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7).setDepth(10);
+  const countdownText = this.add.text(width / 2, height / 2, count, {
       fontSize: '100px',
       color: '#ffffff',
       fontFamily: 'Chewy'
-    }).setOrigin(0.5).setDepth(11).setName("countdown-text");
+  }).setOrigin(0.5).setDepth(11).setName("countdown-text");
 
-//------------------------------------------------------------------------------------------------
-    //Used for testing jest.mock to mock the scene context
-        // Store countdown text on the scene and expose the scene globally.
-        this.countdownText = countdownText;
-        window.myScene = this;
-        
-        // Set a flag to indicate that the game is still starting.
-        this.isStarting = true;
-//------------------------------------------------------------------------------------------------
-  
-    // Create a timer event that fires every 1000ms (1 second), repeating 3 times.
-    this.time.addEvent({
+  this.time.addEvent({
       delay: 1000,
       repeat: 3,
       callback: () => {
-        count--;
-        
-        // If there is still time left, update the text.
-        if (count > 0) {
-          countdownText.setText(count);
-        } else if (count === 0) {
-          // When count reaches 0, display "GO!".
-          countdownText.setText("GO!");
-        } else {
-          // After the countdown, fade out the overlay and text.
-          this.tweens.add({
-            targets: [overlay, countdownText],
-            alpha: 0,
-            duration: 500,
-            onComplete: () => {
-              // Destroy the overlay and text objects after fading out.
-              overlay.destroy();
-              countdownText.destroy();
-              // Call the onComplete callback if provided.
-              if (onComplete) onComplete(); // <- ✅ Call the callback
-            }
-          });
-        }
+          count--;
+          if (count > 0) {
+              countdownText.setText(count);
+          } else if (count === 0) {
+              countdownText.setText("GO!");
+          } else {
+              this.tweens.add({
+                  targets: [overlay, countdownText],
+                  alpha: 0,
+                  duration: 500,
+                  onComplete: () => {
+                      overlay.destroy();
+                      countdownText.destroy();
+                      if (onComplete) onComplete();
+                  }
+              });
+          }
       }
-    });
-  }
-  
-
-
-  /**
- * Handles ending the game, either when the player wins or loses.
- * It creates an overlay, fades it in, and displays a result message and buttons.
- * For a loss, it provides a "Try Again" button that restarts the scene.
- * For a win, it provides a "Return to Main Menu" button.
- *
- * @param {string} outcome - A string indicating the outcome ("win" or any other value for loss).
- */
-export function endGame(outcome) {
-   // Get the canvas dimensions.
-    const { width, height } = this.scale;
-
-    // Create an overlay with an initial alpha of 0.
-    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);
-
-    //Fade in the overlay
-    this.tweens.add({
-        targets: overlay,
-        alpha: 0.8,
-        duration: 800,
-        onComplete: () => {
-          //Determine if outcome is a win
-            const isWin = outcome === 'win';
-            const message = isWin ? 'You Win!' : 'Game Over';
-            const color = isWin ? '#00ff00' : '#ff0000';
-
-            // Display the result message.
-            const resultText = this.add.text(width / 2, height / 2 - 60, message, {
-                fontSize: '64px',
-                color,
-                fontFamily: 'Chewy'
-            }).setOrigin(0.5).setDepth(11);
-
-            // Leaderboard
-            // Delay the prompt to allow UI to render first
-            setTimeout(() => {
-              const playerName = prompt("Enter your name to save your score:");
-              if (playerName && this.score >= 0) {
-                  updateLeaderboard(playerName, this.score);
-                  console.log("Leaderboard updated with:", playerName, this.score);
-              }
-            }, 300);  // Give the UI a short moment to show before blocking
-
-
-            // Create a button to return to the main menu.
-            const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
-                fontSize: '28px',
-                backgroundColor: '#fff',
-                color: '#000',
-                padding: { x: 20, y: 10 },
-                fontFamily: 'Chewy'
-            }).setOrigin(0.5).setDepth(11).setInteractive();
-
-             // When the return button is clicked, navigate to the main menu.
-            returnBtn.on('pointerdown', () => {
-                window.location.href = 'mainMenu.html';
-            });
-
-            // If the outcome is a loss, create an additional "Try Again" button.
-            if (!isWin) {
-                const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
-                    fontSize: '28px',
-                    backgroundColor: '#fff',
-                    color: '#000',
-                    padding: { x: 20, y: 10 },
-                    fontFamily: 'Chewy'
-                }).setOrigin(0.5).setDepth(11).setInteractive();
-
-                // On clicking "Try Again", reset game-related flags, reset lives and score, and restart the scene.
-                tryAgainBtn.on('pointerdown', () => {
-                    // Reset flags BEFORE restarting
-                    this.isStarting = true;
-                    this.isPacmanAlive = true;
-                    this.hasRespawned = false;
-                    this.lives = 3;
-                    this.score = 0;
-                    this.scene.restart();
-                });
-            }
-        }
-    });
-
-    // Pause the physics and mark character as not alive.
-    this.physics.pause();
-    this.isPacmanAlive = false;
+  });
 }
 
+/**
+* Displays a custom name prompt for saving the player's score.
+* @param {Phaser.Scene} scene - The current Phaser scene.
+* @param {function} callback - Function to execute with the player's name as an argument.
+*/
+function showNamePrompt(scene, callback) {
+  const { width, height } = scene.scale;
+
+  // Disable all input events in the scene
+  scene.input.enabled = false;
+
+  const overlay = scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8).setDepth(12);
+  const promptBox = scene.add.rectangle(width / 2, height / 2, 400, 200, 0xffffff).setDepth(13).setStrokeStyle(4, 0x000000);
+
+  const promptText = scene.add.text(width / 2, height / 2 - 60, 'Enter Your Name:', {
+      fontSize: '28px',
+      fontFamily: 'Chewy',
+      color: '#000',
+  }).setOrigin(0.5).setDepth(14);
+
+  const inputBox = scene.add.rectangle(width / 2, height / 2, 360, 40, 0xeeeeee).setDepth(13).setStrokeStyle(2, 0xcccccc);
+
+  let playerName = '';
+  const inputText = scene.add.text(width / 2, height / 2, playerName, {
+      fontSize: '24px',
+      fontFamily: 'Chewy',
+      color: '#000',
+  }).setOrigin(0.5).setDepth(14);
+
+  const instructions = scene.add.text(width / 2, height / 2 + 60, 'Press Enter to confirm', {
+      fontSize: '18px',
+      fontFamily: 'Chewy',
+      color: '#888',
+  }).setOrigin(0.5).setDepth(14);
+
+  const keyboard = scene.input.keyboard.addKeys('A-Z,SPACE,BACKSPACE,ENTER');
+
+  scene.input.keyboard.on('keydown', (event) => {
+      if (event.key === 'Backspace') {
+          playerName = playerName.slice(0, -1);
+      } else if (event.key === 'Enter' && playerName.length > 0) {
+          callback(playerName);
+
+          // Clean up the prompt UI
+          overlay.destroy();
+          promptBox.destroy();
+          promptText.destroy();
+          inputBox.destroy();
+          inputText.destroy();
+          instructions.destroy();
+
+          // Re-enable scene input
+          scene.input.enabled = true;
+      } else if (playerName.length < 20 && /^[a-zA-Z\s]$/.test(event.key)) {
+          playerName += event.key;
+      }
+      inputText.setText(playerName);
+  });
+}
 
 /**
- * Sets up a listener for the pause menu.
- * When the "P" key is pressed, it launches the PauseMenu scene and pauses the current scene.
- */
+* Handles ending the game, either when the player wins or loses.
+* It creates an overlay, fades it in, and displays a result message and buttons.
+* For a loss, it provides a "Try Again" button that restarts the scene.
+* For a win, it provides a "Return to Main Menu" button.
+*
+* @param {string} outcome - A string indicating the outcome ("win" or any other value for loss).
+*/
+export function endGame(outcome) {
+  const { width, height } = this.scale;
+
+  const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);
+
+  this.tweens.add({
+      targets: overlay,
+      alpha: 0.8,
+      duration: 800,
+      onComplete: () => {
+          const isWin = outcome === 'win';
+          const message = isWin ? 'You Win!' : 'Game Over';
+          const color = isWin ? '#00ff00' : '#ff0000';
+
+          const resultText = this.add.text(width / 2, height / 2 - 60, message, {
+              fontSize: '64px',
+              color,
+              fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11);
+
+          setTimeout(() => {
+              showNamePrompt(this, (playerName) => {
+                  if (this.score >= 0) {
+                      updateLeaderboard(playerName, this.score);
+                      console.log("Leaderboard updated with:", playerName, this.score);
+                  }
+              });
+          }, 300);
+
+          const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
+              fontSize: '28px',
+              backgroundColor: '#fff',
+              color: '#000',
+              padding: { x: 20, y: 10 },
+              fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11).setInteractive();
+
+          returnBtn.on('pointerdown', () => {
+              window.location.href = 'mainMenu.html';
+          });
+
+          if (!isWin) {
+              const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
+                  fontSize: '28px',
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  padding: { x: 20, y: 10 },
+                  fontFamily: 'Chewy'
+              }).setOrigin(0.5).setDepth(11).setInteractive();
+
+              tryAgainBtn.on('pointerdown', () => {
+                  this.isStarting = true;
+                  this.isPacmanAlive = true;
+                  this.hasRespawned = false;
+                  this.lives = 3;
+                  this.score = 0;
+                  this.scene.restart();
+              });
+          }
+      }
+  });
+
+  this.physics.pause();
+  this.isPacmanAlive = false;
+}
+
+/**
+* Sets up a listener for the pause menu.
+* When the "P" key is pressed, it launches the PauseMenu scene and pauses the current scene.
+*/
 export function pauseMenu() {
   this.input.keyboard.on('keydown-P', () => {
-      // Launch the pause menu scene.
       this.scene.launch('PauseMenu');
-      // Pause the current scene.
       this.scene.pause();
   });
 }
