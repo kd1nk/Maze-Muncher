@@ -1,3 +1,4 @@
+import * as EnemyMovement from "./enemyMovement.js";
 
 // Initializes the mode timer by starting it with the scatter duration.
 // This method is called at scene startup to schedule the first mode switch.
@@ -41,6 +42,9 @@ export function switchMode() {
         this.ghosts.forEach((enemy) => {
             clearInterval(enemy.blinkInterval);
             enemy.setTexture(enemy.originalTexture);
+            if (enemy.normalAnimation) {
+                enemy.anims.play(enemy.normalAnimation, true);
+            }
 
             // Choose target based on mode: if in chase mode, use chase target; otherwise, use scatter target.
             let target =
@@ -101,8 +105,8 @@ export function getChaseTarget(enemy) {
         }
     }
 
-    if (enemy.texture.key === "orangeGhost") {
-        // For orange enemies, if the distance to the character is large, chase directly; otherwise, use a scatter target
+    if (enemy.type === "brownSheep") {
+        // For brown enemies, if the distance to the character is large, chase directly; otherwise, use a scatter target
         const distance = Math.hypot(
             enemy.x - this.pacman.x,
             enemy.y - this.pacman.y
@@ -111,9 +115,9 @@ export function getChaseTarget(enemy) {
             ? { x: this.pacman.x, y: this.pacman.y }
             : this.CLYDE_SCATTER_TARGET;
     }
-    if (enemy.texture.key === "blueGhost") {
-        // For blue enemies, calculate a target based on a vector from another enemy (red) to a point ahead of the character.
-        const inky = this.blueGhost;
+    if (enemy.type === "pinkSheep") {
+        // For pink enemies, calculate a target based on a vector from another enemy (red) to a point ahead of the character.
+        const inky = this.pinkSheep;
         let pacmanAhead = { x: this.pacman.x, y: this.pacman.y };
         const aheadOffset = this.blockSize * 2;
         switch (this.direction) {
@@ -145,12 +149,10 @@ export function getScaredTarget(ghost) {
 
 // Returns the scatter target for a ghost based on its type
 export function getScatterTarget(ghost) {
-/*     if (ghost.texture.key === "redGhost") return this.BLINKY_SCATTER_TARGET; */
     if (ghost.texture.key === "whiteSheepRight-1") return this.WHITESHEEP_SCATTER_TARGET;
     if (ghost.texture.key === "cyanSheepRight-1") return this.CYANSHEEP_SCATTER_TARGET;
-    /* if (ghost.texture.key === "pinkGhost") return this.PINKY_SCATTER_TARGET; */
-    if (ghost.texture.key === "orangeGhost") return this.CLYDE_SCATTER_TARGET;
-    if (ghost.texture.key === "blueGhost") return this.INKY_SCATTER_TARGET;
+    if (ghost.texture.key === "brownSheepRight-1") return this.BROWNSHEEP_SCATTER_TARGET;
+    if (ghost.texture.key === "pinkSheepRight-1") return this.PINKSHEEP_SCATTER_TARGET;
 }
 
 // Update the ghost's path using an A* algorithm from a start point to the target.
@@ -182,11 +184,17 @@ export function isInghostHouse(x, y) {
 // Implements the A* pathfinding algorithm to find a path from start to target using the intersections grid.
 // It uses Manhattan distance as a heuristic.
 export function aStarAlgorithm(start, target) {
+    // If start or target is missing, return an empty path.
+    if (!start || !target) {
+        return [];
+    }
+
     // Bind the isInghostHouse function to the scene context.
     const isInGhostHouse = isInghostHouse.bind(this);
 
     // Helper function to find the nearest intersection to a point.
     function findNearestIntersection(point, intersections) {
+        if (!point) return null;
         let nearest = null;
         let minDist = Infinity;
         for (const intersection of intersections) {
@@ -317,6 +325,15 @@ export function setGhostsToScaredMode() {
         // Clear any existing blink intervals.
         if (ghost.blinkInterval)
             clearInterval(ghost.blinkInterval);
+
+        ghost.isBlinking = false; // Make sure it's reset
+
+    // Initial scared animation based on current direction
+            if (ghost.direction === "left") {
+            ghost.play("scaredSheep-left", true);
+            } else {
+            ghost.play("scaredSheep-right", true);
+            }
         const blinkTime = this.scaredModeDuration - 2000;
         ghost.blinkInterval = setTimeout(() => {
             // Stop blinking after the scared mode duration.
@@ -328,9 +345,25 @@ export function setGhostsToScaredMode() {
             // Begin an interval to toggle between two scared textures.
             ghost.blinkInterval = setInterval(() => {
                 blinkOn = !blinkOn;
-                ghost.setTexture(blinkOn ? "scaredGhost" : "scaredGhostWhite");
+            // Handle ghost direction and movement during blinking.
+            EnemyMovement.handleGhostDirection.call(this, ghost);
+            EnemyMovement.handleGhostMovement.call(this, ghost);
+            if (ghost.direction === "left") {
+                    ghost.play(blinkOn ? "scaredSheep-left" : "scaredSheepAlt-left", true);
+                } else if (ghost.direction === "right") {
+                    ghost.play(blinkOn ? "scaredSheep-right" : "scaredSheepAlt-right", true);
+                } 
             }, 200);
         }, blinkTime);
-        ghost.setTexture("scaredGhost");
+        ghost.play("scaredSheep-left", true);
+        // Initially, set the enemy to its default scared animation based on its last direction.
+        if (ghost.direction === "left") {
+            ghost.anims.play("scaredSheep-left", true);
+        } else if (ghost.direction === "right") {
+            ghost.anims.play("scaredSheep-right", true);
+        } else {
+            // Default to "right" if direction is not set:
+            ghost.anims.play("scaredSheep-right", true);
+        }
     });
 }

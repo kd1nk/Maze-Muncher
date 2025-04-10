@@ -14,14 +14,15 @@ export function initializeGhosts(layer) {
     //this.pinkGhost = initializeGhost.call(this, 232, 290, "pinkGhost", layer);
     this.whiteSheep = initializeGhost.call(this, 232, 290, "whiteSheepRight-1", layer);
     this.whiteSheep.type = "whiteSheep";
-    this.orangeGhost = initializeGhost.call(this, 210, 290, "orangeGhost", layer);
+    this.brownSheep = initializeGhost.call(this, 210, 290, "brownSheepRight-1", layer);
+    this.brownSheep.type = "brownSheep";
     this.cyanSheep = initializeGhost.call(this, 232, 290, "cyanSheepRight-1", layer);
     this.cyanSheep.type = "cyanSheep";
-/*     this.redGhost = initializeGhost.call(this, 232, 290, "redGhost", layer);
- */    this.blueGhost = initializeGhost.call(this, 255, 290, "blueGhost", layer);
+    this.pinkSheep = initializeGhost.call(this, 255, 290, "pinkSheepRight-1", layer);
+    this.pinkSheep.type = "pinkSheep";
 
     // Store the created enemies in an array for easier management.
-    this.ghosts = [this.whiteSheep, this.cyanSheep, this.orangeGhost, this.blueGhost];
+    this.ghosts = [this.whiteSheep, this.cyanSheep, this.brownSheep, this.pinkSheep];
 
     // Start the entry sequence for each enemy.
     startGhostEntries.call(this);
@@ -147,11 +148,9 @@ export function handleGhostDirection(ghost) {
             return;
         if ((this.CYANSHEEP_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.CYANSHEEP_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "cyanSheepRight-1")
             return;
-/*         if ((this.BLINKY_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.BLINKY_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "redGhost")
-            return; */
-        if ((this.INKY_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.INKY_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "blueGhost")
+        if ((this.PINKSHEEP_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.PINKSHEEP_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "pinkSheepRight-1")
             return;
-        if ((this.CLYDE_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.CLYDE_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "orangeGhost")
+        if ((this.BROWNSHEEP_SCATTER_TARGET.x === ghost.nextIntersection.x) && (this.BROWNSHEEP_SCATTER_TARGET.y === ghost.nextIntersection.y) && this.currentMode === "scatter" && ghost.texture.key === "brownSheepRight-1")
             return;
 
         if (this.currentMode === "chase") {

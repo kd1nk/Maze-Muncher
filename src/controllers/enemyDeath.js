@@ -29,15 +29,13 @@ export function handlePacmanGhostCollision(pacman, ghost) {
 // Finally, it restarts the enemy entry sequence and resets the enemy mode.
 export function resetGhosts() {
     // Reset positions for each enemy individually.
-/*     this.redGhost.setPosition(232, 290); */
     this.cyanSheep.setPosition(232, 290);
     this.whiteSheep.setPosition(220, 290);
-    /* this.pinkGhost.setPosition(220, 290); */
-    this.blueGhost.setPosition(255, 290);
-    this.orangeGhost.setPosition(210, 290);
+    this.pinkSheep.setPosition(255, 290);
+    this.brownSheep.setPosition(210, 290);
 
     // Update the global enemy array with the current enemy objects.
-    this.ghosts = [this.whiteSheep, this.cyanSheep, this.orangeGhost, this.blueGhost];
+    this.ghosts = [this.whiteSheep, this.cyanSheep, this.brownSheep, this.pinkSheep];
 
     // For each enemy, reset its state:
     this.ghosts.forEach(ghost => {

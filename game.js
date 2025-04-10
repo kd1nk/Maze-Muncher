@@ -27,8 +27,8 @@ class Pacman extends Phaser.Scene {
     // Define scatter targets for the enemies (using your predefined coordinates)
     this.WHITESHEEP_SCATTER_TARGET = { x: 432, y: 80 };
     this.CYANSHEEP_SCATTER_TARGET = { x: 32, y: 80 };
-    this.INKY_SCATTER_TARGET = { x: 432, y: 528 };
-    this.CLYDE_SCATTER_TARGET = { x: 32, y: 528 };
+    this.PINKSHEEP_SCATTER_TARGET = { x: 432, y: 528 };
+    this.BROWNSHEEP_SCATTER_TARGET = { x: 32, y: 528 };
 
     // Define durations for different game modes
     this.scatterModeDuration = 7000;
@@ -130,19 +130,63 @@ class Pacman extends Phaser.Scene {
     this.load.spritesheet("cyanSheepRight-2", "assets/enemies/cyan sheep/cyan-sheep-right-2.png", {
       frameWidth: 32, frameHeight: 32
     });
-    
-/*     this.load.spritesheet("pinkGhost", "assets/ghost/pink ghost/spr_ghost_pink_0.png", {
-      frameWidth: 32, frameHeight: 32
-    }); */
-    this.load.spritesheet("orangeGhost", "assets/ghost/orange ghost/spr_ghost_orange_0.png", {
+
+    // Load pink sheep sprites
+    this.load.spritesheet("pinkSheepLeft-1", "assets/enemies/pink sheep/pink-sheep-left-1.png", {
       frameWidth: 32, frameHeight: 32
     });
-    this.load.spritesheet("blueGhost", "assets/ghost/blue ghost/spr_ghost_blue_0.png", {
+    this.load.spritesheet("pinkSheepRight-1", "assets/enemies/pink sheep/pink-sheep-right-1.png", {
       frameWidth: 32, frameHeight: 32
     });
-/*     this.load.spritesheet("redGhost", "assets/ghost/red ghost/spr_ghost_red_0.png", {
+    this.load.spritesheet("pinkSheepLeft-2", "assets/enemies/pink sheep/pink-sheep-left-2.png", {
       frameWidth: 32, frameHeight: 32
-    }); */
+    });
+    this.load.spritesheet("pinkSheepRight-2", "assets/enemies/pink sheep/pink-sheep-right-2.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+
+    // Load brown sheep sprites
+    this.load.spritesheet("brownSheepLeft-1", "assets/enemies/brown sheep/brown-sheep-left-1.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("brownSheepRight-1", "assets/enemies/brown sheep/brown-sheep-right-1.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("brownSheepLeft-2", "assets/enemies/brown sheep/brown-sheep-left-2.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("brownSheepRight-2", "assets/enemies/brown sheep/brown-sheep-right-2.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+
+    // Load scared sheep sprites
+    this.load.spritesheet("scaredSheepLeft-1", "assets/enemies/scared sheep/scared-sheep-left-1.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("scaredSheepRight-1", "assets/enemies/scared sheep/scared-sheep-right-1.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("scaredSheepLeft-2", "assets/enemies/scared sheep/scared-sheep-left-2.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+    this.load.spritesheet("scaredSheepRight-2", "assets/enemies/scared sheep/scared-sheep-right-2.png", {
+      frameWidth: 32, frameHeight: 32
+    });
+
+   // Load scared sheep alt sprites
+  this.load.spritesheet("scaredSheepAltLeft-1", "assets/enemies/scared sheep alt/scared-sheep-left-1.png", {
+    frameWidth: 32, frameHeight: 32
+  });
+  this.load.spritesheet("scaredSheepAltRight-1", "assets/enemies/scared sheep alt/scared-sheep-right-1.png", {
+    frameWidth: 32, frameHeight: 32
+  });
+  this.load.spritesheet("scaredSheepAltLeft-2", "assets/enemies/scared sheep alt/scared-sheep-left-2.png", {
+    frameWidth: 32, frameHeight: 32
+  });
+  this.load.spritesheet("scaredSheepAltRight-2", "assets/enemies/scared sheep alt/scared-sheep-right-2.png", {
+    frameWidth: 32, frameHeight: 32
+  });
+
     this.load.spritesheet("scaredGhost", "assets/ghost/ghost afraid/spr_afraid_0.png", {
       frameWidth: 32, frameHeight: 32
     });
@@ -258,6 +302,87 @@ class Pacman extends Phaser.Scene {
       repeat: -1
     });
 
+    //pink sheep animations
+    this.anims.create({
+      key: "pinkSheep-right",
+      frames: [
+        { key: "pinkSheepRight-1" },
+        { key: "pinkSheepRight-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "pinkSheep-left",
+      frames: [
+        { key: "pinkSheepLeft-1" },
+        { key: "pinkSheepLeft-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+
+
+    //brown sheep animations
+    this.anims.create({
+      key: "brownSheep-right",
+      frames: [
+        { key: "brownSheepRight-1" },
+        { key: "brownSheepRight-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "brownSheep-left",
+      frames: [
+        { key: "brownSheepLeft-1" },
+        { key: "brownSheepLeft-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+
+    //scared sheep animations
+    this.anims.create({
+      key: "scaredSheep-right",
+      frames: [
+        { key: "scaredSheepRight-1" },
+        { key: "scaredSheepRight-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "scaredSheep-left",
+      frames: [
+        { key: "scaredSheepLeft-1" },
+        { key: "scaredSheepLeft-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+
+    //scared sheep alt animations
+    this.anims.create({
+      key: "scaredSheepAlt-right",
+      frames: [
+        { key: "scaredSheepAltRight-1" },
+        { key: "scaredSheepAltRight-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "scaredSheepAlt-left",
+      frames: [
+        { key: "scaredSheepAltLeft-1" },
+        { key: "scaredSheepAltLeft-2" },
+      ],
+      frameRate: 7,
+      repeat: -1
+    });
+
     // Create the character's death animation.
     this.anims.create({
       key: "farmBoyDeath",
@@ -291,26 +416,23 @@ class Pacman extends Phaser.Scene {
     MazeUtils.detectIntersections.call(this);
     EnemyMovement.initializeGhosts.call(this, layer);
     let startPoint = { x: 232, y: 240 };
-/*     this.pinkGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.PINKY_SCATTER_TARGET);
-    this.pinkGhost.nextIntersection = this.pinkGhost.path.shift(); */
 
+    // Initialize the enemy's paths using A* algorithm
     this.whiteSheep.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.WHITESHEEP_SCATTER_TARGET);
     this.whiteSheep.nextIntersection = this.whiteSheep.path.shift();
 
     this.cyanSheep.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.CYANSHEEP_SCATTER_TARGET);
     this.cyanSheep.nextIntersection = this.cyanSheep.path.shift();
 
-    this.blueGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.INKY_SCATTER_TARGET);
-    this.blueGhost.nextIntersection = this.blueGhost.path.shift();
+    this.pinkSheep.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.PINKSHEEP_SCATTER_TARGET);
+    this.pinkSheep.nextIntersection = this.pinkSheep.path.shift();
 
-    this.orangeGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.CLYDE_SCATTER_TARGET);
-    this.orangeGhost.nextIntersection = this.orangeGhost.path.shift();
+    this.brownSheep.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.BROWNSHEEP_SCATTER_TARGET);
+    this.brownSheep.nextIntersection = this.brownSheep.path.shift();
 
-/*     this.redGhost.path = EnemyBehavior.aStarAlgorithm.call(this, startPoint, this.BLINKY_SCATTER_TARGET);
-    this.redGhost.nextIntersection = this.redGhost.path.shift(); */
 
     // Set the initial direction for the ghosts.
-    this.ghosts = [this.whiteSheep, this.cyanSheep, this.orangeGhost, this.blueGhost];
+    this.ghosts = [this.whiteSheep, this.cyanSheep, this.brownSheep, this.pinkSheep];
 
     // Set the initial direction for the ghosts.
     this.ghosts.forEach(ghost => {
@@ -353,42 +475,28 @@ class Pacman extends Phaser.Scene {
     CharacterMovement.handlePacmanMovement.call(this);
     CharacterMovement.teleportPacmanAcrossWorldBounds.call(this);
 
-    // Update the ghost movement and behavior based on their current state.
-/*     if (this.pinkGhost.enteredMaze) {
-      EnemyMovement.handleGhostDirection.call(this, this.pinkGhost);
-      EnemyMovement.handleGhostMovement.call(this, this.pinkGhost);
-    } */
+  const ghosts = [this.whiteSheep, this.cyanSheep, this.brownSheep, this.pinkSheep];
 
-    if (this.whiteSheep.enteredMaze) {
-      EnemyMovement.handleGhostDirection.call(this, this.whiteSheep);
-      EnemyMovement.handleGhostMovement.call(this, this.whiteSheep);
-
-      if(this.whiteSheep.direction === "right") {
-        this.whiteSheep.play("whiteSheep-right", true);
-    } else if(this.whiteSheep.direction === "left") {
-        this.whiteSheep.play("whiteSheep-left", true);
+  ghosts.forEach(ghost => {
+    if (!ghost.enteredMaze) return;
+  
+    EnemyMovement.handleGhostDirection.call(this, ghost);
+    EnemyMovement.handleGhostMovement.call(this, ghost);
+  
+    // Let scared mode blinking handle animations itself
+    if (this.currentMode === "scared") return;
+  
+    if (ghost.type === "whiteSheep") {
+      ghost.play(ghost.direction === "right" ? "whiteSheep-right" : "whiteSheep-left", true);
+    } else if (ghost.type === "cyanSheep") {
+      ghost.play(ghost.direction === "right" ? "cyanSheep-right" : "cyanSheep-left", true);
+    } else if (ghost.type === "brownSheep") {
+      ghost.play(ghost.direction === "right" ? "brownSheep-right" : "brownSheep-left", true);
+    } else if (ghost.type === "pinkSheep") {
+      ghost.play(ghost.direction === "right" ? "pinkSheep-right" : "pinkSheep-left", true);
     }
-}  
-    if (this.orangeGhost.enteredMaze) {
-      EnemyMovement.handleGhostDirection.call(this, this.orangeGhost);
-      EnemyMovement.handleGhostMovement.call(this, this.orangeGhost);
-    }
+  });
 
-    if (this.cyanSheep.enteredMaze) {
-      EnemyMovement.handleGhostDirection.call(this, this.cyanSheep);
-      EnemyMovement.handleGhostMovement.call(this, this.cyanSheep);
-
-      if(this.cyanSheep.direction === "right") {
-        this.cyanSheep.play("cyanSheep-right", true);
-    } else if(this.whiteSheep.direction === "left") {
-        this.cyanSheep.play("cyanSheep-left", true);
-    }
-    }
-
-/*     if (this.redGhost.enteredMaze) {
-      EnemyMovement.handleGhostDirection.call(this, this.redGhost);
-      EnemyMovement.handleGhostMovement.call(this, this.redGhost);
-    } */
     //updating multiplier
     EatCorn.updateMultiplier.call(this, delta);
   }
