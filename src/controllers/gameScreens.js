@@ -131,10 +131,11 @@ export function endGame(outcome) {
           }).setOrigin(0.5).setDepth(11);
 
           setTimeout(() => {
+            const finalScore = Math.floor(this.score * this.scoreMultiplier);
               showNamePrompt(this, (playerName) => {
-                  if (this.score >= 0) {
-                      updateLeaderboard(playerName, this.score);
-                      console.log("Leaderboard updated with:", playerName, this.score);
+                  if (finalScore >= 0) {
+                      updateLeaderboard(playerName, finalScore);
+                      console.log("Leaderboard updated with:", playerName, finalScore);
                   }
               });
           }, 300);
