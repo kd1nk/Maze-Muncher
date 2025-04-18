@@ -48,15 +48,22 @@ class Pacman extends Phaser.Scene {
     this.hasRespawned = false
     this.isStarting = true;
 
+    this.maps = ["map", "map2", "map3"]; // Array of maps to switch between
+    this.tilesetNames = ["pacman tileset", "maze muncher tileset"]; // Corresponding tileset names
   }
 
 
   preload() {
 
-    // Load tilemap and tileset asset
+    // Load tilemap 1 and tileset asset
     this.load.image("pacman tileset", "assets/pac man tiles/tileset.png");
-    this.load.tilemapTiledJSON("map", "assets/pacman-map.json");
+    this.load.tilemapTiledJSON("map", "assets/maps/pacman-map.json");
 
+    // Load tilemap 2 and tileset asset
+    this.load.tilemapTiledJSON("map2", "assets/maps/map2.json");
+   
+
+    
     //Farm Boy Sprites
     this.load.spritesheet("Farm boy0", "assets/Farm boy/Farm boy-0.png", {
       frameWidth: 32, frameHeight: 32
@@ -204,14 +211,13 @@ class Pacman extends Phaser.Scene {
       EnemyMovement.startGhostEntries.call(this);
     });
     // Create the tilemap and assign the tileset.
-    this.map = this.make.tilemap({key:"map"});
-    const tileset = this.map.addTilesetImage("pacman tileset");
+    this.map = this.make.tilemap({key:this.maps[0]}); //map 2 for testing. will make array later.
+    const tileset = this.map.addTilesetImage(this.tilesetNames[0], "pacman tileset");
     // Create the layer and set collision properties.
     const layer = this.map.createLayer("Tile Layer 1", [tileset]);
     layer.setCollisionByExclusion(-1, true);
     // Create the player character and enable physics
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
-    
 
     // Create animations for the character.
     this.anims.create({
