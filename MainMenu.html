@@ -13,6 +13,7 @@
         <div id="mainMenu" class="menu">
             <h1>Maze Muncher</h1>
             <button onclick="startGame()">Start Game</button>
+            <button onclick="showLevelSelectMenu()">Level Select</button>
             <button onclick="showSettings()">Settings</button>
             <button onclick="viewLeaderboard()">Leaderboard</button>
             <button onclick="exitGame()">Exit Game</button>
@@ -51,6 +52,12 @@
             <div class="menu-footer">
                 <p>Eat More Corn!</p>
             </div>
+        </div>
+
+        <div id="levelSelectScreen" class="menu" style="display: none;">
+            <h2>Select a Level</h2>
+            <div id="levelButtonsContainer"></div>
+            <button onclick="goBack()">Back</button>
         </div>
 
         <div class="fence"></div>

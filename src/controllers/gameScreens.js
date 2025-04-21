@@ -1,3 +1,6 @@
+import { loadMap } from './mazeUtils.js';
+
+
 /**
  * Creates a countdown overlay before the game starts (or restarts).
  * It displays a full-screen overlay and a large countdown text,
@@ -186,3 +189,5 @@ export function pauseMenu() {
       this.scene.pause();
   });
 }
+
+

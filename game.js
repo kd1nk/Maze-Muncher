@@ -48,8 +48,12 @@ class Pacman extends Phaser.Scene {
     this.hasRespawned = false
     this.isStarting = true;
 
-    this.maps = ["map", "map2", "map3"]; // Array of maps to switch between
-    this.tilesetNames = ["pacman tileset", "maze muncher tileset"]; // Corresponding tileset names
+    this.mapConfigs = [
+      { key: "map", tileset: "pacman tileset" },
+      { key: "map2", tileset: "maze muncher tileset" },
+      { key: "map3", tileset: "another tileset name" }
+    ];
+    
   }
 
 
@@ -211,10 +215,31 @@ class Pacman extends Phaser.Scene {
       EnemyMovement.startGhostEntries.call(this);
     });
     // Create the tilemap and assign the tileset.
-    this.map = this.make.tilemap({key:this.maps[0]}); //map 2 for testing. will make array later.
+/*     this.map = this.make.tilemap({key:this.maps[0]}); //map 2 for testing. will make array later.
     const tileset = this.map.addTilesetImage(this.tilesetNames[0], "pacman tileset");
     // Create the layer and set collision properties.
     const layer = this.map.createLayer("Tile Layer 1", [tileset]);
+    layer.setCollisionByExclusion(-1, true); */
+    this.mapConfigs = [
+      { key: "map", tileset: "pacman tileset" },
+      { key: "map2", tileset: "maze muncher tileset" },
+      { key: "map3", tileset: "another tileset name" }
+    ];
+    
+    const storedIndex = localStorage.getItem("selectedMapIndex");
+
+    if (storedIndex !== null) {
+      this.currentMapIndex = parseInt(storedIndex);
+    } else {
+      // User clicked "Start Game" (not "Level Select") — pick random map
+      this.currentMapIndex = Phaser.Math.Between(0, this.mapConfigs.length - 1);
+      console.log("Random map index:", this.currentMapIndex);
+    }
+        
+    const currentMap = this.mapConfigs[this.currentMapIndex];
+    this.map = this.make.tilemap({ key: currentMap.key });
+    const tileset = this.map.addTilesetImage(currentMap.tileset, "pacman tileset");
+    const layer = this.map.createLayer("Tile Layer 1", tileset);
     layer.setCollisionByExclusion(-1, true);
     // Create the player character and enable physics
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
@@ -465,6 +490,9 @@ class Pacman extends Phaser.Scene {
 
     // Pause menu scene
     GameScreens.pauseMenu.call(this);
+
+    localStorage.removeItem("selectedMapIndex");
+
   }
 
 
