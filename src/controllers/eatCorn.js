@@ -37,10 +37,17 @@ export function eatDot(pacman, dot) {
  * - Adjusts enemy behavior: sets enemies to scared mode and reduces their speed.
  * - Resets each enemy's "hasBeenEaten" flag.
  */
+
 export function eatPowerPill(pacman, powerPill) {
     // Remove the power pill from the game world.
     powerPill.disableBody(true, true);
-
+  
+    // Play power-up sound
+    const volume = parseFloat(localStorage.getItem('mazeMuncher_sfxVol') || 0.8);
+    const powerSfx = this.sound.add('powerPillSfx', { volume });
+    powerSfx.play();
+    powerSfx.once('complete', () => powerSfx.destroy());
+  
     // Set the current mode to "scared" so enemies behave accordingly.
     this.currentMode = "scared";
 
@@ -52,12 +59,13 @@ export function eatPowerPill(pacman, powerPill) {
 
     // Reduce the speed of the enemies.
     this.ghostSpeed = this.speed * 0.5;
-    
-    // Mark each enemy as not having been eaten yet.
+
+   // Mark each enemy as not having been eaten yet.
     this.ghosts.forEach((ghost) => {
-        ghost.hasBeenEaten = false;
+      ghost.hasBeenEaten = false;
     });
-}
+  }
+  
 
 /**
  * Updates the score multiplier over time.

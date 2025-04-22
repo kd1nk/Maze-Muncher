@@ -201,6 +201,8 @@ class Pacman extends Phaser.Scene {
     this.load.audio('deathSfx',   'assets/audio/death.mp3');
     this.load.audio('winJingle',  'assets/audio/winJingle.wav');
     this.load.audio('loseJingle', 'assets/audio/loseJingle.wav');
+    this.load.audio('powerPillSfx', 'assets/audio/powerup.wav');
+
   }
   create() {
 
