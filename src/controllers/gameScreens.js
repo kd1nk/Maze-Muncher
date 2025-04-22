@@ -111,6 +111,18 @@ function showNamePrompt(scene, callback) {
 * @param {string} outcome - A string indicating the outcome ("win" or any other value for loss).
 */
 export function endGame(outcome) {
+    
+// stop game music
+if (this.gameMusic.isPlaying) {
+    this.gameMusic.stop();
+  }
+  
+  // win/lose jingle
+  this.sound.play(
+    outcome === 'win' ? 'winJingle' : 'loseJingle',
+    { volume: sfxVol }
+  );
+  
   const { width, height } = this.scale;
 
   const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000).setAlpha(0).setDepth(10);

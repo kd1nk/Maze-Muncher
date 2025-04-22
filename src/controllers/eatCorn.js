@@ -9,35 +9,27 @@ import { endGame } from "./gameScreens.js";
  * - If there are no more active dots, triggers the win condition.
  */
 export function eatDot(pacman, dot) {
-    // Remove the kernel from the game world.
+    // Prevent dot eating during initial delay
+    if (!this.canEatDots) return;
+  
     dot.disableBody(true, true);
-
-    // Increase the player's score.
+  
+    // Play sound
+    const volume = parseFloat(localStorage.getItem('mazeMuncher_sfxVol') || 0.8);
+    const fx = this.sound.add('dotSfx', { volume });
+    fx.play();
+    fx.once('complete', () => fx.destroy());
+  
+    // Score
     this.score += 100;
-
-    // Update the score display.
     this.scoreText.setText('Score: ' + this.score);
-
-    // debug
-    // console.log("Remaining dots:", this.dots.countActive(true)); 
-    // this.dots.getChildren().forEach(dot => {
-    //     if (dot.active) {
-    //         console.log(`Still active: (${dot.x}, ${dot.y})`);
-    //     }
-    // });
-
-
-    // Check for win
+  
     if (this.dots.countActive(true) === 0) {
-        console.log("ALL DOTS EATEN!");
-
-        // Trigger the end game sequence with a win condition.
-        endGame.call(this, "win");
+      console.log("ALL DOTS EATEN!");
+      endGame.call(this, "win");
     }
-}
-
-
-
+  }
+  
 /**
  * Called when character eats a power bean.
  * - Disables the power bean so it is removed from play.

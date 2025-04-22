@@ -1,9 +1,52 @@
+// Volume preferences
+const MENU_VOL_KEY = 'mazeMuncher_menuVol';
+const GAME_VOL_KEY = 'mazeMuncher_gameVol';
+const SFX_VOL_KEY  = 'mazeMuncher_sfxVol';
+
+let menuVol = parseFloat(localStorage.getItem(MENU_VOL_KEY) || 0.5);
+let gameVol = parseFloat(localStorage.getItem(GAME_VOL_KEY) || 0.5);
+let sfxVol  = parseFloat(localStorage.getItem(SFX_VOL_KEY ) || 0.8);
+
+// Menu Music
+function initializeMenuMusic() {
+    console.log('🎵 Initializing menu music...');
+    if (!window.menuMusic) {
+        window.menuMusic = new Audio('assets/audio/menu_background.mp3');
+        window.menuMusic.loop = true;
+        window.menuMusic.volume = menuVol;
+    }
+    window.menuMusic.play().catch(() => {
+        // Handle play promise rejection if needed
+    });
+}
+
+// Call the function when the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    initializeMenuMusic();
+});
+
+  
+  // Save progress before leaving or reloading the page
+  window.addEventListener('beforeunload', () => {
+    if (window.menuMusic) {
+      sessionStorage.setItem('menuMusicTime', window.menuMusic.currentTime);
+    }
+  });
+  
 /**
  * Starts the game. Currently displays an alert.
  */
 function startGame() {
-    window.location.href = "game.html";
+    if (window.menuMusic) {
+        window.menuMusic.pause();
+        window.menuMusic.currentTime = 0;
+        window.menuMusic.src = ''; // 🛑 Unload the audio source
+        window.menuMusic = null;   // ❌ Remove the global reference
+    }
+    window.location.href = 'game.html';
 }
+
+window.startGame = startGame;
 
 let previousScreen = "mainMenu";
 
@@ -16,10 +59,43 @@ function showSettings() {
 
 // Displays the volume settings screen.
 function volumeScreen() {
+    // hide the others…
+    document.getElementById("mainMenu").style.display      = "none";
     document.getElementById("settingsScreen").style.display = "none";
-    document.getElementById("volumeScreen").style.display = "block";
-    previousScreen = "settingsScreen"; // Came from the settings menu
-}
+  
+    // show only volume
+    const volDiv = document.getElementById("volumeScreen");
+    volDiv.style.display    = "block";
+    previousScreen = "settingsScreen";
+  
+    // grab sliders
+    const menuSld = document.getElementById('menuMusicSlider');
+    const gameSld = document.getElementById('gameMusicSlider');
+    const sfxSld  = document.getElementById('sfxSlider');
+  
+    // init positions
+    menuSld.value = menuVol;
+    gameSld.value = gameVol;
+    sfxSld.value  = sfxVol;
+  
+    // live listeners
+    menuSld.oninput = e => {
+    menuVol = +e.target.value;
+    localStorage.setItem(MENU_VOL_KEY, menuVol);
+    if (window.menuMusic) window.menuMusic.volume = menuVol;
+    };
+    gameSld.oninput = e => {
+      gameVol = +e.target.value;
+      localStorage.setItem(GAME_VOL_KEY, gameVol);
+      // your Phaser scenes should read window.gameVol on startup
+    };
+    sfxSld.oninput = e => {
+      sfxVol = +e.target.value;
+      localStorage.setItem(SFX_VOL_KEY, sfxVol);
+      // when you play SFX: let fx = new Audio(...); fx.volume = sfxVol;
+    };
+  }
+  
 
 // Displays the accessibility options.
 function accessibilityMenu() {
