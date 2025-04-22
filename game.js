@@ -504,7 +504,7 @@ class Pacman extends Phaser.Scene {
         volume: gameVol,
         duration: 4000,
         onComplete: () => {
-          console.log("🎶 Game music fade-in complete");
+          console.log("Game music fade-in complete");
         }
       });
     });
