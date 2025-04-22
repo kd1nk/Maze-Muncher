@@ -9,35 +9,27 @@ import { endGame } from "./gameScreens.js";
  * - If there are no more active dots, triggers the win condition.
  */
 export function eatDot(pacman, dot) {
-    // Remove the kernel from the game world.
+    // Prevent dot eating during initial delay
+    if (!this.canEatDots) return;
+  
     dot.disableBody(true, true);
-
-    // Increase the player's score.
+  
+    // Play sound
+    const volume = parseFloat(localStorage.getItem('mazeMuncher_sfxVol') || 0.8);
+    const fx = this.sound.add('dotSfx', { volume });
+    fx.play();
+    fx.once('complete', () => fx.destroy());
+  
+    // Score
     this.score += 100;
-
-    // Update the score display.
     this.scoreText.setText('Score: ' + this.score);
-
-    // debug
-    // console.log("Remaining dots:", this.dots.countActive(true)); 
-    // this.dots.getChildren().forEach(dot => {
-    //     if (dot.active) {
-    //         console.log(`Still active: (${dot.x}, ${dot.y})`);
-    //     }
-    // });
-
-
-    // Check for win
+  
     if (this.dots.countActive(true) === 0) {
-        console.log("ALL DOTS EATEN!");
-
-        // Trigger the end game sequence with a win condition.
-        endGame.call(this, "win");
+      console.log("ALL DOTS EATEN!");
+      endGame.call(this, "win");
     }
-}
-
-
-
+  }
+  
 /**
  * Called when character eats a power bean.
  * - Disables the power bean so it is removed from play.
@@ -45,10 +37,17 @@ export function eatDot(pacman, dot) {
  * - Adjusts enemy behavior: sets enemies to scared mode and reduces their speed.
  * - Resets each enemy's "hasBeenEaten" flag.
  */
+
 export function eatPowerPill(pacman, powerPill) {
     // Remove the power pill from the game world.
     powerPill.disableBody(true, true);
-
+  
+    // Play power-up sound
+    const volume = parseFloat(localStorage.getItem('mazeMuncher_sfxVol') || 0.8);
+    const powerSfx = this.sound.add('powerPillSfx', { volume });
+    powerSfx.play();
+    powerSfx.once('complete', () => powerSfx.destroy());
+  
     // Set the current mode to "scared" so enemies behave accordingly.
     this.currentMode = "scared";
 
@@ -60,12 +59,13 @@ export function eatPowerPill(pacman, powerPill) {
 
     // Reduce the speed of the enemies.
     this.ghostSpeed = this.speed * 0.5;
-    
-    // Mark each enemy as not having been eaten yet.
+
+   // Mark each enemy as not having been eaten yet.
     this.ghosts.forEach((ghost) => {
-        ghost.hasBeenEaten = false;
+      ghost.hasBeenEaten = false;
     });
-}
+  }
+  
 
 /**
  * Updates the score multiplier over time.
