@@ -40,8 +40,8 @@ function startGame() {
     if (window.menuMusic) {
         window.menuMusic.pause();
         window.menuMusic.currentTime = 0;
-        window.menuMusic.src = ''; // 🛑 Unload the audio source
-        window.menuMusic = null;   // ❌ Remove the global reference
+        window.menuMusic.src = ''; //Unload the audio source
+        window.menuMusic = null;   //Remove the global reference
     }
     window.location.href = 'game.html';
 }
