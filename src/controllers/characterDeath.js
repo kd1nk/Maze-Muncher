@@ -21,6 +21,14 @@ export function pacmanDies() {
     // Play the death animation (farmBoyDeath) with immediate start.
     this.pacman.play("farmBoyDeath", true);
 
+      // ✅ Play death sound ONLY here
+  if (this.deathSfx && this.sound) {
+    if (this.deathSfx.isPlaying) {
+      this.deathSfx.stop();
+    }
+    this.deathSfx.play();
+  }
+
     // After 2000ms, call resetAfterDeath to handle respawn or game over.
     this.time.delayedCall(2000, () => {
         resetAfterDeath.call(this);

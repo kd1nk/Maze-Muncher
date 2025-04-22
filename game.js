@@ -515,21 +515,6 @@ class Pacman extends Phaser.Scene {
       this.canEatDots = true;
     });
 
-
-    // on‐death
-    this.ghosts.forEach(ghost => {
-      this.physics.add.overlap(this.pacman, ghost, () => {
-        const newDeathSfx = this.sound.add('deathSfx');
-        newDeathSfx.play({ volume: sfxVol });
-    
-        // Optional: clean up after sound finishes
-        newDeathSfx.once('complete', () => {
-          newDeathSfx.destroy();
-        });
-    
-        EnemyDeath.handlePacmanGhostCollision.call(this, this.pacman, ghost);
-      });
-    });
     
   }
 
