@@ -208,14 +208,31 @@ class Pacman extends Phaser.Scene {
       frameWidth: 32, frameHeight: 32
     });
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
+
+    // Audio Loads
+    this.load.audio('gameMusic',  'assets/audio/game_background.mp3');
+    this.load.audio('dotSfx',     'assets/audio/dot.mp3');
+    this.load.audio('deathSfx',   'assets/audio/death.mp3');
+    this.load.audio('winJingle',  'assets/audio/winJingle.wav');
+    this.load.audio('loseJingle', 'assets/audio/loseJingle.wav');
+    this.load.audio('powerPillSfx', 'assets/audio/powerup.wav');
+
   }
   create() {
 
     GameScreens.createStartCountdown.call(this, () => {
+      this.sound.play('dotSfx', { volume: 0 });
+
+      this.deathSfx = this.sound.add('deathSfx', {
+        volume: sfxVol
+      });
+
+
       // This runs after the countdown finishes
       this.isPacmanAlive = true;
       this.isStarting = false;
       EnemyMovement.startGhostEntries.call(this);
+
     });
     // Create the tilemap and assign the tileset.
 /*     this.map = this.make.tilemap({key:this.maps[0]}); //map 2 for testing. will make array later.
@@ -495,6 +512,45 @@ class Pacman extends Phaser.Scene {
     GameScreens.pauseMenu.call(this);
 
     localStorage.removeItem("selectedMapIndex");
+    // read saved volumes
+    const gameVol = parseFloat(localStorage.getItem('mazeMuncher_gameVol') || 0.5);
+    const sfxVol  = parseFloat(localStorage.getItem('mazeMuncher_sfxVol')  || 0.8);
+    
+    // stop main menu music before game music starts
+    if (window.menuMusic) {
+      window.menuMusic.pause();
+      window.menuMusic.currentTime = 0;
+      window.menuMusic.src = '';
+      window.menuMusic = null;
+  }
+  
+    // background music
+    this.gameMusic = this.sound.add('gameMusic', {
+      loop: true,
+      volume: 0
+    });
+    
+    this.gameMusic.play();
+    
+    // Delay the fade-in to make sure the audio context is fully unlocked
+    this.time.delayedCall(100, () => {
+      this.tweens.add({
+        targets: this.gameMusic,
+        volume: gameVol,
+        duration: 4000,
+        onComplete: () => {
+          console.log("Game music fade-in complete");
+        }
+      });
+    });
+    
+    this.canEatDots = false;
+
+    this.time.delayedCall(3000, () => {
+      this.canEatDots = true;
+    });
+
+    
 
   }
 

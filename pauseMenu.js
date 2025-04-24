@@ -38,8 +38,14 @@ class PauseMenu extends Phaser.Scene {
         }).setOrigin(0.5).setInteractive();
 
         menuButton.on('pointerdown', () => {
+            // Save the last known timestamp of the menu music before navigating away
+            if (window.menuMusic) {
+                sessionStorage.setItem('menuMusicTime', window.menuMusic.currentTime);
+            }
+        
             window.location.href = 'mainMenu.html';
         });
+        
     }
 
 }

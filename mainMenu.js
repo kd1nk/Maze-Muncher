@@ -1,38 +1,105 @@
+// Volume preferences
+const MENU_VOL_KEY = 'mazeMuncher_menuVol';
+const GAME_VOL_KEY = 'mazeMuncher_gameVol';
+const SFX_VOL_KEY = 'mazeMuncher_sfxVol';
+
+let menuVol = parseFloat(localStorage.getItem(MENU_VOL_KEY) || 0.5);
+let gameVol = parseFloat(localStorage.getItem(GAME_VOL_KEY) || 0.5);
+let sfxVol = parseFloat(localStorage.getItem(SFX_VOL_KEY) || 0.8);
+
+// Menu Music
+function initializeMenuMusic() {
+    console.log('🎵 Initializing menu music...');
+    if (!window.menuMusic) {
+        window.menuMusic = new Audio('assets/audio/menu_background.mp3');
+        window.menuMusic.loop = true;
+        window.menuMusic.volume = menuVol;
+    }
+    window.menuMusic.play().catch(() => {
+        // Handle play promise rejection if needed
+    });
+}
+
+// Call the function when the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    initializeMenuMusic();
+});
+
+
+// Save progress before leaving or reloading the page
+window.addEventListener('beforeunload', () => {
+    if (window.menuMusic) {
+        sessionStorage.setItem('menuMusicTime', window.menuMusic.currentTime);
+    }
+});
+
 /**
- * Starts the game. Currently displays an alert.
+ * Starts the game.
  */
 function startGame() {
-    window.location.href = "game.html";
+    if (window.menuMusic) {
+        window.menuMusic.pause();
+        window.menuMusic.currentTime = 0;
+        window.menuMusic.src = '';
+        window.menuMusic = null;
+    }
+    window.location.href = 'game.html';
 }
+
+window.startGame = startGame;
 
 let previousScreen = "mainMenu";
 
-// Displays the settings screen - more settings can be added as deemed appropriate //
+// Displays the settings screen.
 function showSettings() {
-    document.getElementById("mainMenu").style.display = "none";
+    hideAllScreens();
     document.getElementById("settingsScreen").style.display = "block";
-    previousScreen = "mainMenu"; // We came from the main menu //
+    previousScreen = "mainMenu";
 }
 
 // Displays the volume settings screen.
 function volumeScreen() {
-    document.getElementById("settingsScreen").style.display = "none";
-    document.getElementById("volumeScreen").style.display = "block";
-    previousScreen = "settingsScreen"; // Came from the settings menu
+    hideAllScreens();
+    const volumeScreen = document.getElementById("volumeScreen");
+    volumeScreen.style.display = "block";
+    previousScreen = "settingsScreen";
+
+    const menuSlider = document.getElementById('menuMusicSlider');
+    const gameSlider = document.getElementById('gameMusicSlider');
+    const sfxSlider = document.getElementById('sfxSlider');
+
+    menuSlider.value = menuVol;
+    gameSlider.value = gameVol;
+    sfxSlider.value = sfxVol;
+
+    menuSlider.oninput = (event) => {
+        menuVol = +event.target.value;
+        localStorage.setItem(MENU_VOL_KEY, menuVol);
+        if (window.menuMusic) window.menuMusic.volume = menuVol;
+    };
+
+    gameSlider.oninput = (event) => {
+        gameVol = +event.target.value;
+        localStorage.setItem(GAME_VOL_KEY, gameVol);
+    };
+
+    sfxSlider.oninput = (event) => {
+        sfxVol = +event.target.value;
+        localStorage.setItem(SFX_VOL_KEY, sfxVol);
+    };
 }
 
 // Displays the accessibility options.
 function accessibilityMenu() {
-    document.getElementById("settingsScreen").style.display = "none";
+    hideAllScreens();
     document.getElementById("accessibilityScreen").style.display = "block";
-    previousScreen = "settingsScreen"; // Came from the settings menu
+    previousScreen = "settingsScreen";
 }
 
 function setColorBlindMode(type) {
     const menus = document.querySelectorAll('.menu');
     const buttons = document.querySelectorAll('button');
 
-    // Remove all existing theme classes
     menus.forEach(menu => {
         menu.classList.remove('normal', 'protanopia', 'deuteranopia', 'tritanopia');
         menu.classList.add(type);
@@ -45,8 +112,9 @@ function setColorBlindMode(type) {
     console.log("Setting colorblind mode to:", type);
 }
 
-// Takes us back to previous screen //
+// Takes us back to previous screen
 function goBack() {
+
     if (previousScreen === "mainMenu") {
         // If we came from the main menu, go back to main menu
         document.getElementById("mainMenu").style.display = "block";
@@ -67,6 +135,12 @@ function goBack() {
         previousScreen = "mainMenu"
     } else {
         window.location.href = "MainMenu.html";
+
+    hideAllScreens();
+    document.getElementById(previousScreen).style.display = "block";
+    if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
+        previousScreen = "mainMenu";
+
     }
 }
 
@@ -74,10 +148,10 @@ function goBack() {
  * Displays the leaderboard.
  */
 function viewLeaderboard() {
-    document.getElementById("mainMenu").style.display = "none";
+    hideAllScreens();
     document.getElementById("leaderboardScreen").style.display = "block";
-    previousScreen = "leaderboardScreen"; // Set previousScreen
-    updateLeaderboardDisplay(); // Call this function when showing the leaderboard
+    previousScreen = "leaderboardScreen";
+    updateLeaderboardDisplay();
 }
 
 //  Use localStorage to persist data
@@ -90,9 +164,9 @@ function updateLeaderboardDisplay() {
         return;
     }
 
-    leaderboardList.innerHTML = ""; // Clear the list first
+    leaderboardList.innerHTML = "";
 
-    leaderboardData.sort((a, b) => b.score - a.score); // Sort by score descending
+    leaderboardData.sort((a, b) => b.score - a.score); //high to low
 
     if (leaderboardData.length > 0) {
         leaderboardData.forEach((entry, index) => {
@@ -114,12 +188,19 @@ function updateLeaderboardDisplay() {
 
 function updateLeaderboard(playerName, score) {
     leaderboardData.push({ name: playerName, score: score });
-    leaderboardData.sort((a, b) => b.score - a.score); // Sort after adding
-    if (leaderboardData.length > 10) {
+    leaderboardData.sort((a, b) => b.score - a.score); //high to low
+     if (leaderboardData.length > 10) {
         leaderboardData = leaderboardData.slice(0, 10); // Keep only top 10
     }
     localStorage.setItem('mazeMuncherLeaderboard', JSON.stringify(leaderboardData)); // Save to localStorage
     updateLeaderboardDisplay(); // Update the display
+}
+
+function showCustomization() {
+    hideAllScreens();
+    document.getElementById("customizationScreen").style.display = "block";
+    previousScreen = "customizationScreen";
+    openTab('hats'); //show hats first
 }
 
 /**
@@ -137,6 +218,7 @@ function viewCredits() {
         "Credits:\nDeveloped by Dawsyn Birtell, Hope Walton, Kacy Dinkel, Kyle Cassity."
     );
 }
+
 
 function showLevelSelectMenu() {
     const mainMenu = document.getElementById("mainMenu");
@@ -173,6 +255,25 @@ function showLevelSelectMenu() {
 }
 
 
+
+// Add this function to handle tab switching in the customization screen
+function openTab(tabName) {
+    let i;
+    let tabs = document.getElementsByClassName("tab");
+    for (i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = "none";
+    }
+    document.getElementById(tabName).style.display = "block";
+}
+
+function hideAllScreens() {
+    const screens = document.querySelectorAll('.menu');
+    screens.forEach(screen => {
+        screen.style.display = 'none';
+    });
+}
+
+
 // Expose functions globally so the HTML can access them
 window.startGame = startGame;
 window.viewCredits = viewCredits;
@@ -184,3 +285,8 @@ window.exitGame = exitGame;
 window.updateLeaderboardDisplay = updateLeaderboardDisplay;
 window.updateLeaderboard = updateLeaderboard;
 window.showLevelSelectMenu = showLevelSelectMenu;
+
+window.showCustomization = showCustomization;
+window.openTab = openTab;
+window.hideAllScreens = hideAllScreens;
+
