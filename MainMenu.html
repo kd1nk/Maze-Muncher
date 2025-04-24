@@ -13,6 +13,7 @@
         <div id="mainMenu" class="menu">
             <h1>Maze Muncher</h1>
             <button onclick="startGame()">Start Game</button>
+            <button onclick="showLevelSelectMenu()">Level Select</button>
             <button onclick="showSettings()">Settings</button>
             <button onclick="viewLeaderboard()">Leaderboard</button>
             <button onclick="showCustomization()">Player Customization</button>
@@ -53,6 +54,11 @@
             </div>
         </div>
 
+
+        <div id="levelSelectScreen" class="menu" style="display: none;">
+            <h2>Select a Level</h2>
+            <div id="levelButtonsContainer"></div>
+
         <div id="customizationScreen" class="menu" style="display: none;">
             <h1>Player Customization</h1>
             <button class="tab-button" onclick="openTab('hats')">Hats</button>
@@ -65,6 +71,7 @@
                 <h3>Outfits</h3>
                 <p>Choose an outfit for your player.</p>
                 </div>
+
             <button onclick="goBack()">Back</button>
         </div>
 

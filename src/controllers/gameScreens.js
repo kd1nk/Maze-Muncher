@@ -1,3 +1,6 @@
+import { loadMap } from './mazeUtils.js';
+
+
 /**
  * Creates a countdown overlay before the game starts (or restarts).
  */
@@ -280,3 +283,5 @@ function showNewHighScoreScreen(scene, score, onComplete) {
     });
 
 }
+
+

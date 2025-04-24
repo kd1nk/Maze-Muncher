@@ -114,10 +114,33 @@ function setColorBlindMode(type) {
 
 // Takes us back to previous screen
 function goBack() {
+
+    if (previousScreen === "mainMenu") {
+        // If we came from the main menu, go back to main menu
+        document.getElementById("mainMenu").style.display = "block";
+        document.getElementById("settingsScreen").style.display = "none";
+        document.getElementById("levelSelectScreen").style.display = "none";
+        document.getElementById("volumeScreen").style.display = "none";
+        document.getElementById("accessibilityScreen").style.display = "none";  //hide
+        document.getElementById("leaderboardScreen").style.display = "none";
+    } else if (previousScreen === "settingsScreen") {
+        // If we came from settings, go back to settings
+        document.getElementById("settingsScreen").style.display = "block";
+        document.getElementById("volumeScreen").style.display = "none";
+        document.getElementById("accessibilityScreen").style.display = "none";
+        previousScreen = "mainMenu"; // Update previous screen in case of another back press
+    } else if (previousScreen === "leaderboardScreen") {
+        document.getElementById("mainMenu").style.display = "block";
+        document.getElementById("leaderboardScreen").style.display = "none";
+        previousScreen = "mainMenu"
+    } else {
+        window.location.href = "MainMenu.html";
+
     hideAllScreens();
     document.getElementById(previousScreen).style.display = "block";
     if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
         previousScreen = "mainMenu";
+
     }
 }
 
@@ -196,6 +219,43 @@ function viewCredits() {
     );
 }
 
+
+function showLevelSelectMenu() {
+    const mainMenu = document.getElementById("mainMenu");
+    const levelSelectScreen = document.getElementById("levelSelectScreen");
+
+    if (!levelSelectScreen) {
+        console.error("Missing #levelSelectScreen in HTML");
+        return;
+    }
+
+    mainMenu.style.display = "none";
+    levelSelectScreen.style.display = "block";
+
+    const container = document.getElementById("levelButtonsContainer");
+    container.innerHTML = "";
+
+    const levels = [
+        { key: "map", label: "Level 1" },
+        { key: "map2", label: "Level 2" },
+        { key: "map3", label: "Level 3" }
+    ];
+
+    levels.forEach((level, index) => {
+        const button = document.createElement("button");
+        button.textContent = level.label;
+        button.onclick = () => {
+            localStorage.setItem("selectedMapIndex", index);
+            window.location.href = "game.html";
+        };
+        container.appendChild(button);
+    });
+
+    previousScreen = "mainMenu";
+}
+
+
+
 // Add this function to handle tab switching in the customization screen
 function openTab(tabName) {
     let i;
@@ -213,6 +273,7 @@ function hideAllScreens() {
     });
 }
 
+
 // Expose functions globally so the HTML can access them
 window.startGame = startGame;
 window.viewCredits = viewCredits;
@@ -223,6 +284,9 @@ window.viewLeaderboard = viewLeaderboard;
 window.exitGame = exitGame;
 window.updateLeaderboardDisplay = updateLeaderboardDisplay;
 window.updateLeaderboard = updateLeaderboard;
+window.showLevelSelectMenu = showLevelSelectMenu;
+
 window.showCustomization = showCustomization;
 window.openTab = openTab;
 window.hideAllScreens = hideAllScreens;
+

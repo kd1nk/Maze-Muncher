@@ -233,3 +233,23 @@ export function isMovingInxDirection(direction) {
     let result = (direction === "left" || direction === "right") ? true : false;
     return result;
 }
+
+
+//Loads tile maps and layers based on the provided configurations and index.
+export function loadMap(scene, mapConfigs, index) {
+    const { key: mapKey, tileset } = mapConfigs[index];
+
+    if (scene.map) {
+        scene.map.destroy();
+    }
+
+    scene.map = scene.make.tilemap({ key: mapKey });
+    const tilesetObj = scene.map.addTilesetImage(tileset, tileset);
+    const layer = scene.map.createLayer("Tile Layer 1", tilesetObj);
+    layer.setCollisionByExclusion(-1, true);
+
+    return {
+        map: scene.map,
+        layer
+    };
+}
