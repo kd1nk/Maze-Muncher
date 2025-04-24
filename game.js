@@ -7,6 +7,7 @@ import * as MazeUtils from "./src/controllers/mazeUtils.js";
 import * as EnemyDeath from "./src/controllers/enemyDeath.js";
 import * as EatCorn from "./src/controllers/eatCorn.js";
 import * as GameScreens from "./src/controllers/gameScreens.js";
+import * as LoadSprites from "./src/controllers/loadSprites.js";
 import * as LoadAnims from "./src/controllers/loadAnims.js";
 
 
@@ -70,9 +71,9 @@ class Pacman extends Phaser.Scene {
     // Load tilemap 2 and tileset asset
     this.load.tilemapTiledJSON("map3", "assets/maps/map3.json");
 
-    LoadAnims.loadCharAnims(this);
-    LoadAnims.loadEnemySprites(this);
-
+    //Loads animations for the enemies and character
+    LoadSprites.loadCharSprites(this);
+    LoadSprites.loadEnemySprites(this);
 
     // Kernels|Power Beans
     this.load.image("dot", "assets/pacman items/Corn Kernel-large.png");
@@ -105,17 +106,6 @@ class Pacman extends Phaser.Scene {
       EnemyMovement.startGhostEntries.call(this);
 
     });
-    // Create the tilemap and assign the tileset.
-/*     this.map = this.make.tilemap({key:this.maps[0]}); //map 2 for testing. will make array later.
-    const tileset = this.map.addTilesetImage(this.tilesetNames[0], "pacman tileset");
-    // Create the layer and set collision properties.
-    const layer = this.map.createLayer("Tile Layer 1", [tileset]);
-    layer.setCollisionByExclusion(-1, true); */
-    this.mapConfigs = [
-      { key: "map", tileset: "pacman tileset" },
-      { key: "map2", tileset: "map2" },
-      { key: "map3", tileset: "map3" }
-    ];
     
     const storedIndex = localStorage.getItem("selectedMapIndex");
 
@@ -135,187 +125,12 @@ class Pacman extends Phaser.Scene {
     // Create the player character and enable physics
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
 
-    // Create animations for the character.
-    this.anims.create({
-      key: "neutral",
-      frames: [
-        { key: "Farm boy0" },
-      ],
-      frameRate: 10
-    });
-
-    this.anims.create({
-      key: "walk-right",
-      frames: [
-        { key: "Farm boy1" },
-        { key: "Farm boy2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    this.anims.create({
-      key: "walk-left",
-      frames: [
-        { key: "Farm boy3" },
-        { key: "Farm boy4" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    this.anims.create({
-      key: "walk-down",
-      frames: [
-        { key: "Farm boy5" },
-        { key: "Farm boy6" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    this.anims.create({
-      key: "walk-up",
-      frames: [
-        { key: "Farm boy7" },
-        { key: "Farm boy8" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    //white sheep animations
-    this.anims.create({
-      key: "whiteSheep-right",
-      frames: [
-        { key: "whiteSheepRight-1" },
-        { key: "whiteSheepRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "whiteSheep-left",
-      frames: [
-        { key: "whiteSheepLeft-1" },
-        { key: "whiteSheepLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    //cyan sheep animations
-    this.anims.create({
-      key: "cyanSheep-right",
-      frames: [
-        { key: "cyanSheepRight-1" },
-        { key: "cyanSheepRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "cyanSheep-left",
-      frames: [
-        { key: "cyanSheepLeft-1" },
-        { key: "cyanSheepLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    //pink sheep animations
-    this.anims.create({
-      key: "pinkSheep-right",
-      frames: [
-        { key: "pinkSheepRight-1" },
-        { key: "pinkSheepRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "pinkSheep-left",
-      frames: [
-        { key: "pinkSheepLeft-1" },
-        { key: "pinkSheepLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-
-    //brown sheep animations
-    this.anims.create({
-      key: "brownSheep-right",
-      frames: [
-        { key: "brownSheepRight-1" },
-        { key: "brownSheepRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "brownSheep-left",
-      frames: [
-        { key: "brownSheepLeft-1" },
-        { key: "brownSheepLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    //scared sheep animations
-    this.anims.create({
-      key: "scaredSheep-right",
-      frames: [
-        { key: "scaredSheepRight-1" },
-        { key: "scaredSheepRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "scaredSheep-left",
-      frames: [
-        { key: "scaredSheepLeft-1" },
-        { key: "scaredSheepLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-
-    //scared sheep alt animations
-    this.anims.create({
-      key: "scaredSheepAlt-right",
-      frames: [
-        { key: "scaredSheepAltRight-1" },
-        { key: "scaredSheepAltRight-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
-    this.anims.create({
-      key: "scaredSheepAlt-left",
-      frames: [
-        { key: "scaredSheepAltLeft-1" },
-        { key: "scaredSheepAltLeft-2" },
-      ],
-      frameRate: 7,
-      repeat: -1
-    });
+    // Create animations and sprites for the character.
+    LoadAnims.loadCharAnims(this);
+    LoadAnims.loadSheepAnims(this);
 
     // Create the character's death animation.
-    this.anims.create({
-      key: "farmBoyDeath",
-      frames: [
-        { key: "farmBoyDeath1" },
-        { key: "farmBoyDeath2" },
-        { key: "farmBoyDeath3" },
-      ],
-      frameRate: 3,
-      repeat: 0
-    });
+    LoadAnims.loadDeathAnims(this);
 
     // Create the enemies and set their properties.
     this.physics.add.collider(this.pacman, layer);

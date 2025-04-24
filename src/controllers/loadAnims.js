@@ -1,41 +1,86 @@
-
-//Loads all farmboy animations 
+//Load all character animations
 export function loadCharAnims(scene) {
-    // Farm Boy Sprites
-    for (let i = 0; i <= 8; i++) {
-        scene.load.spritesheet(`Farm boy${i}`, `assets/Farm boy/Farm boy-${i}.png`, {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-    }
+    scene.anims.create({
+        key: "neutral",
+        frames: [{ key: "Farm boy0" }],
+        frameRate: 10
+    });
 
-    // Death Animation
-    for (let i = 1; i <= 3; i++) {
-        scene.load.spritesheet(`farmBoyDeath${i}`, `assets/Farm boy/Farm boy-death-${i}.png`, {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-    }
+    scene.anims.create({
+        key: "walk-right",
+        frames: [{ key: "Farm boy1" }, { key: "Farm boy2" }],
+        frameRate: 7,
+        repeat: -1
+    });
+
+    scene.anims.create({
+        key: "walk-left",
+        frames: [{ key: "Farm boy3" }, { key: "Farm boy4" }],
+        frameRate: 7,
+        repeat: -1
+    });
+
+    scene.anims.create({
+        key: "walk-down",
+        frames: [{ key: "Farm boy5" }, { key: "Farm boy6" }],
+        frameRate: 7,
+        repeat: -1
+    });
+
+    scene.anims.create({
+        key: "walk-up",
+        frames: [{ key: "Farm boy7" }, { key: "Farm boy8" }],
+        frameRate: 7,
+        repeat: -1
+    });
 }
 
 
-// Load all sheep enemy sprites
-export function loadEnemySprites(scene) {
+//Load all sheep enemy animations
+export function loadSheepAnims(scene) {
     const sheepTypes = [
-        { prefix: "whiteSheep", path: "white sheep/sheep" },
-        { prefix: "cyanSheep", path: "cyan sheep/cyan-sheep" },
-        { prefix: "pinkSheep", path: "pink sheep/pink-sheep" },
-        { prefix: "brownSheep", path: "brown sheep/brown-sheep" },
-        { prefix: "scaredSheep", path: "scared sheep/scared-sheep" },
-        { prefix: "scaredSheepAlt", path: "scared sheep alt/scared-sheep" }
+        "whiteSheep",
+        "cyanSheep",
+        "pinkSheep",
+        "brownSheep",
+        "scaredSheep",
+        "scaredSheepAlt"
     ];
 
-    sheepTypes.forEach(({ prefix, path }) => {
-        ["Left-1", "Right-1", "Left-2", "Right-2"].forEach(dir => {
-            scene.load.spritesheet(`${prefix}${dir}`, `assets/enemies/${path.toLowerCase()}-${dir.toLowerCase()}.png`, {
-                frameWidth: 32,
-                frameHeight: 32
-            });
+    sheepTypes.forEach(type => {
+        scene.anims.create({
+            key: `${type}-right`,
+            frames: [
+                { key: `${type}Right-1` },
+                { key: `${type}Right-2` },
+            ],
+            frameRate: 7,
+            repeat: -1
         });
+
+        scene.anims.create({
+            key: `${type}-left`,
+            frames: [
+                { key: `${type}Left-1` },
+                { key: `${type}Left-2` },
+            ],
+            frameRate: 7,
+            repeat: -1
+        });
+    });
+}
+
+
+//Load char death animation sprites
+export function loadDeathAnims(scene) {
+    scene.anims.create({
+        key: "farmBoyDeath",
+        frames: [
+            { key: "farmBoyDeath1" },
+            { key: "farmBoyDeath2" },
+            { key: "farmBoyDeath3" },
+        ],
+        frameRate: 3,
+        repeat: 0
     });
 }
