@@ -136,11 +136,11 @@ function goBack() {
     } else {
         window.location.href = "MainMenu.html";
 
-    hideAllScreens();
-    document.getElementById(previousScreen).style.display = "block";
-    if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
-        previousScreen = "mainMenu";
-
+        hideAllScreens();
+        document.getElementById(previousScreen).style.display = "block";
+        if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
+            previousScreen = "mainMenu";
+        }
     }
 }
 
@@ -249,8 +249,7 @@ function showLevelSelectMenu() {
             window.location.href = "game.html";
         };
         container.appendChild(button);
-    });
-
+        });
     previousScreen = "mainMenu";
 }
 
@@ -285,7 +284,6 @@ window.exitGame = exitGame;
 window.updateLeaderboardDisplay = updateLeaderboardDisplay;
 window.updateLeaderboard = updateLeaderboard;
 window.showLevelSelectMenu = showLevelSelectMenu;
-
 window.showCustomization = showCustomization;
 window.openTab = openTab;
 window.hideAllScreens = hideAllScreens;

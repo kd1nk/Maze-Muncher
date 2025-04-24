@@ -24,7 +24,7 @@
             <h1>Settings</h1>
             <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
             <button onclick="accessibilityMenu()">Accessibility Options</button>
-            <button onclick="goBack()">Back</button>
+            <button onclick="goBack()">Back to Main Menu</button>
         </div>
 
         <div id="accessibilityScreen" class="menu" style="display: none;">
@@ -41,7 +41,7 @@
             <label>Menu Music: <input id="menuMusicSlider" type="range" min="0" max="1" step="0.01"></label>
             <label>Game Music: <input id="gameMusicSlider" type="range" min="0" max="1" step="0.01"></label>
             <label>Sound Effects:        <input id="sfxSlider"       type="range" min="0" max="1" step="0.01"></label>
-            <button onclick="goBack()">Back</button>
+            <button onclick="goBack()">Back to Main Menu</button>
         </div>
         
         <div id="leaderboardScreen" class="menu" style="display: none;">
@@ -57,7 +57,10 @@
 
         <div id="levelSelectScreen" class="menu" style="display: none;">
             <h2>Select a Level</h2>
-            <div id="levelButtonsContainer"></div>
+            <div id="levelButtonsContainer">
+        </div>
+        <button onclick="goBack()">Back to Main Menu</button>
+        </div>
 
         <div id="customizationScreen" class="menu" style="display: none;">
             <h1>Player Customization</h1>
@@ -72,7 +75,7 @@
                 <p>Choose an outfit for your player.</p>
                 </div>
 
-            <button onclick="goBack()">Back</button>
+            <button onclick="goBack()">Back to Main Menu</button>
         </div>
 
         <div class="fence"></div>
