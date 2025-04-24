@@ -50,8 +50,8 @@ class Pacman extends Phaser.Scene {
 
     this.mapConfigs = [
       { key: "map", tileset: "pacman tileset" },
-      { key: "map2", tileset: "maze muncher tileset" },
-      { key: "map3", tileset: "another tileset name" }
+      { key: "map2", tileset: "map2" },
+      { key: "map3", tileset: "map3" }
     ];
     
   }
@@ -65,6 +65,9 @@ class Pacman extends Phaser.Scene {
 
     // Load tilemap 2 and tileset asset
     this.load.tilemapTiledJSON("map2", "assets/maps/map2.json");
+
+    // Load tilemap 2 and tileset asset
+    this.load.tilemapTiledJSON("map3", "assets/maps/map3.json");
    
 
     
@@ -222,8 +225,8 @@ class Pacman extends Phaser.Scene {
     layer.setCollisionByExclusion(-1, true); */
     this.mapConfigs = [
       { key: "map", tileset: "pacman tileset" },
-      { key: "map2", tileset: "maze muncher tileset" },
-      { key: "map3", tileset: "another tileset name" }
+      { key: "map2", tileset: "map2" },
+      { key: "map3", tileset: "map3" }
     ];
     
     const storedIndex = localStorage.getItem("selectedMapIndex");

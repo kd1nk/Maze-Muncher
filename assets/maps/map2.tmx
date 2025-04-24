@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="map2.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="maze muncher tileset" tilewidth="16" tileheight="16" tilecount="435" columns="29">
+ <tileset firstgid="1" name="map2" tilewidth="16" tileheight="16" tilecount="435" columns="29">
   <image source="pac man tiles/tileset.png" width="470" height="244"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="28" height="31">
