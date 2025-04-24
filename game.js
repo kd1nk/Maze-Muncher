@@ -7,6 +7,7 @@ import * as MazeUtils from "./src/controllers/mazeUtils.js";
 import * as EnemyDeath from "./src/controllers/enemyDeath.js";
 import * as EatCorn from "./src/controllers/eatCorn.js";
 import * as GameScreens from "./src/controllers/gameScreens.js";
+import * as LoadAnims from "./src/controllers/loadAnims.js";
 
 
 class Pacman extends Phaser.Scene {
@@ -68,145 +69,15 @@ class Pacman extends Phaser.Scene {
 
     // Load tilemap 2 and tileset asset
     this.load.tilemapTiledJSON("map3", "assets/maps/map3.json");
-   
 
-    
-    //Farm Boy Sprites
-    this.load.spritesheet("Farm boy0", "assets/Farm boy/Farm boy-0.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy1", "assets/Farm boy/Farm boy-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy2", "assets/Farm boy/Farm boy-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy3", "assets/Farm boy/Farm boy-3.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy4", "assets/Farm boy/Farm boy-4.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy5", "assets/Farm boy/Farm boy-5.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy6", "assets/Farm boy/Farm boy-6.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy7", "assets/Farm boy/Farm boy-7.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("Farm boy8", "assets/Farm boy/Farm boy-8.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-
-    //Death Animation
-    this.load.spritesheet("farmBoyDeath1", "assets/Farm boy/Farm boy-death-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("farmBoyDeath2", "assets/Farm boy/Farm boy-death-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("farmBoyDeath3", "assets/Farm boy/Farm boy-death-3.png", {
-      frameWidth: 32, frameHeight: 32
-    });
+    LoadAnims.loadCharAnims(this);
+    LoadAnims.loadEnemySprites(this);
 
 
     // Kernels|Power Beans
     this.load.image("dot", "assets/pacman items/Corn Kernel-large.png");
     this.load.image("powerPill", "assets/pacman items/Power Bean.png");
 
-    // Load white sheep sprites
-    this.load.spritesheet("whiteSheepLeft-1", "assets/enemies/white sheep/sheep-left-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("whiteSheepRight-1", "assets/enemies/white sheep/sheep-right-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("whiteSheepLeft-2", "assets/enemies/white sheep/sheep-left-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("whiteSheepRight-2", "assets/enemies/white sheep/sheep-right-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-    // Load cyan sheep sprites
-    this.load.spritesheet("cyanSheepLeft-1", "assets/enemies/cyan sheep/cyan-sheep-left-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("cyanSheepRight-1", "assets/enemies/cyan sheep/cyan-sheep-right-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("cyanSheepLeft-2", "assets/enemies/cyan sheep/cyan-sheep-left-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("cyanSheepRight-2", "assets/enemies/cyan sheep/cyan-sheep-right-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-    // Load pink sheep sprites
-    this.load.spritesheet("pinkSheepLeft-1", "assets/enemies/pink sheep/pink-sheep-left-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("pinkSheepRight-1", "assets/enemies/pink sheep/pink-sheep-right-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("pinkSheepLeft-2", "assets/enemies/pink sheep/pink-sheep-left-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("pinkSheepRight-2", "assets/enemies/pink sheep/pink-sheep-right-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-    // Load brown sheep sprites
-    this.load.spritesheet("brownSheepLeft-1", "assets/enemies/brown sheep/brown-sheep-left-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("brownSheepRight-1", "assets/enemies/brown sheep/brown-sheep-right-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("brownSheepLeft-2", "assets/enemies/brown sheep/brown-sheep-left-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("brownSheepRight-2", "assets/enemies/brown sheep/brown-sheep-right-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-    // Load scared sheep sprites
-    this.load.spritesheet("scaredSheepLeft-1", "assets/enemies/scared sheep/scared-sheep-left-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("scaredSheepRight-1", "assets/enemies/scared sheep/scared-sheep-right-1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("scaredSheepLeft-2", "assets/enemies/scared sheep/scared-sheep-left-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("scaredSheepRight-2", "assets/enemies/scared sheep/scared-sheep-right-2.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-
-   // Load scared sheep alt sprites
-  this.load.spritesheet("scaredSheepAltLeft-1", "assets/enemies/scared sheep alt/scared-sheep-left-1.png", {
-    frameWidth: 32, frameHeight: 32
-  });
-  this.load.spritesheet("scaredSheepAltRight-1", "assets/enemies/scared sheep alt/scared-sheep-right-1.png", {
-    frameWidth: 32, frameHeight: 32
-  });
-  this.load.spritesheet("scaredSheepAltLeft-2", "assets/enemies/scared sheep alt/scared-sheep-left-2.png", {
-    frameWidth: 32, frameHeight: 32
-  });
-  this.load.spritesheet("scaredSheepAltRight-2", "assets/enemies/scared sheep alt/scared-sheep-right-2.png", {
-    frameWidth: 32, frameHeight: 32
-  });
-
-    this.load.spritesheet("scaredGhost", "assets/ghost/ghost afraid/spr_afraid_0.png", {
-      frameWidth: 32, frameHeight: 32
-    });
-    this.load.spritesheet("scaredGhostWhite", "assets/ghost/ghost afraid/spr_afraid_1.png", {
-      frameWidth: 32, frameHeight: 32
-    });
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
 
     // Audio Loads
