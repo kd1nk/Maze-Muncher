@@ -1,5 +1,4 @@
-
-// Import modules for handling character movement, enemy behavior/movement, maze utilities, enemy death, pellet consumption, and game screens.
+// Import modules for handling character movement, enemy behavior/movement, maze utilities, enemy death, pellet consumption, power ups, and game screens.
 import * as CharacterMovement from "./src/controllers/characterMovement.js";
 import * as EnemyBehavior from "./src/controllers/ghostBehaviors.js";
 import * as EnemyMovement from "./src/controllers/enemyMovement.js";
@@ -9,6 +8,7 @@ import * as EatCorn from "./src/controllers/eatCorn.js";
 import * as GameScreens from "./src/controllers/gameScreens.js";
 import * as LoadSprites from "./src/controllers/loadSprites.js";
 import * as LoadAnims from "./src/controllers/loadAnims.js";
+import * as PowerUpController from "./src/controllers/PowerUpController.js";
 
 
 class Pacman extends Phaser.Scene {
@@ -78,6 +78,11 @@ class Pacman extends Phaser.Scene {
     // Kernels|Power Beans
     this.load.image("dot", "assets/pacman items/Corn Kernel-large.png");
     this.load.image("powerPill", "assets/pacman items/Power Bean.png");
+    // Power ups...
+    this.load.image("potato", "assets/pacman items/potato_yellow.png");
+    this.load.image("carrot", "assets/pacman items/carrot_orange.png");
+    this.load.image("cabbage", "assets/pacman items/cabbage.png");
+    this.load.image("Corn", "assets/pacman items/Corn.png");
 
     this.load.image("endGameImage", "assets/pac man text/spr_message_2.png");
 
@@ -124,6 +129,15 @@ class Pacman extends Phaser.Scene {
     layer.setCollisionByExclusion(-1, true);
     // Create the player character and enable physics
     this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
+    //Create the inventory system...
+    this.pacman.powerUp = null;
+
+    this.pacman.usePowerUp = function() {
+      if(this.powerUp){
+        this.powerUp.activate(this);
+        this.powerUp = null
+      }
+    };
 
     // Create animations and sprites for the character.
     LoadAnims.loadCharAnims(this);
@@ -235,8 +249,94 @@ class Pacman extends Phaser.Scene {
     this.time.delayedCall(3000, () => {
       this.canEatDots = true;
     });
-
     
+
+    //Key to use the powerUps...
+    this.useKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+
+    //PowerUp spawning and removing...
+    this.powerUpsGroup = this.physics.add.group(); // Store any power-up instances here
+
+    this.spawnPotatoPowerUp = () => {
+    if(this.powerUpsGroup.countActive(true) >= 2) return;
+    const randomIndex = Phaser.Math.Between(0, this.intersections.length - 1);
+    const { x, y } = this.intersections[randomIndex];
+    
+    const potato = this.powerUpsGroup.create(x, y, 'potato');
+    //Adding outline to potato...
+    const outline = this.add.graphics();
+    outline.lineStyle(3, 0x00FF00, 1);
+    outline.strokeRect(potato.x - potato.width / 2, potato.y - potato.height / 2, potato.width, potato.height);
+    potato.outline = outline;
+
+    potato.setDepth(1); // Optional layering
+    potato.setScale(0.5); // If it's too big
+
+    // Store a reference to the actual power-up object
+    potato.powerUp = new PowerUpController.PotatoPowerUp();
+
+    // Timer to destroy after 9 seconds
+    this.time.delayedCall(9000, () => {
+      if (potato && potato.active) {
+        if(potato.outline) potato.outline.destroy();
+          potato.destroy();
+        }
+      });
+    };
+
+    // Spawn it every 12 seconds for testing
+    this.time.addEvent({
+      delay: 12000,
+      loop: true,
+      callback: this.spawnPotatoPowerUp
+    });
+
+    //Spawn the corn powerup...
+    this.spawnCornPowerUp = () => {
+      if(this.powerUpsGroup.countActive(true) >= 2) return;
+
+      const randomIndex = Phaser.Math.Between(0, this.intersections.length - 1);
+      const {x, y} = this.intersections[randomIndex];
+
+      const Corn = this.powerUpsGroup.create(x, y, 'Corn');
+      //Adding outline to corn powerup...
+      const outline = this.add.graphics();
+      outline.lineStyle(3, 0x00FF00, 1);
+      outline.strokeRect(Corn.x - Corn.width / 2, Corn.y - Corn.height / 2, Corn.width, Corn.height);
+      Corn.outline = outline;
+
+      //Reference to the actual power up object
+      Corn.powerUp = new PowerUpController.CornPowerUp();
+
+      //Timer to destory after 9 seconds
+      this.time.delayedCall(9000, () => {
+        if(Corn && Corn.active){
+          if(Corn.outline) Corn.outline.destroy();
+          Corn.destroy();
+        }
+      });
+    };
+
+    //Spawn Corn every 10 seconds
+    this.time.addEvent({
+      delay: 10000,
+      loop: true,
+      callback: this.spawnCornPowerUp
+    });
+
+    this.physics.add.overlap(this.pacman, this.powerUpsGroup, (pacman, powerUpSprite) => {
+      if(!this.pacman.powerUp){
+        this.pacman.powerUp = powerUpSprite.powerUp;
+
+        if(powerUpSprite.outline){
+          powerUpSprite.outline.destroy();
+        }
+
+        powerUpSprite.destroy();
+
+        //this.showMessage?.('Picked up a potato! Press [E] to use!');
+      }
+    });
 
   }
 
@@ -251,6 +351,11 @@ class Pacman extends Phaser.Scene {
 
     // Update the score text display with the current score.
     CharacterMovement.handleDirectionInput.call(this);
+    //If powerup is used...
+    if(this.useKey && Phaser.Input.Keyboard.JustDown(this.useKey)){
+      this.pacman.usePowerUp?.();
+    }
+
     CharacterMovement.handlePacmanMovement.call(this);
     CharacterMovement.teleportPacmanAcrossWorldBounds.call(this);
 
