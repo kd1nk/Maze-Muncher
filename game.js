@@ -71,8 +71,14 @@ class Pacman extends Phaser.Scene {
     // Load tilemap 2 and tileset asset
     this.load.tilemapTiledJSON("map3", "assets/maps/map3.json");
 
-    //Loads animations for the enemies and character
-    LoadSprites.loadCharSprites(this);
+    //Load Character sprites
+    LoadSprites.loadBaseSprites(this);
+    LoadSprites.loadPigSprites(this);
+    LoadSprites.loadTopHatSprites(this);
+    LoadSprites.loadMushroomSprites(this);
+    LoadSprites.loadMarioSprites(this);
+
+    //Loads sprites for the enemies
     LoadSprites.loadEnemySprites(this);
 
     // Kernels|Power Beans
@@ -140,11 +146,12 @@ class Pacman extends Phaser.Scene {
     };
 
     // Create animations and sprites for the character.
-    LoadAnims.loadCharAnims(this);
+    LoadAnims.loadBaseAnims(this);
     LoadAnims.loadSheepAnims(this);
 
     // Create the character's death animation.
-    LoadAnims.loadDeathAnims(this);
+    LoadAnims.loadBaseDeathAnims(this);
+
 
     // Create the enemies and set their properties.
     this.physics.add.collider(this.pacman, layer);
