@@ -26,7 +26,7 @@ COPY . /var/www/html
 RUN docker-php-ext-install pdo_pgsql
 
 # Copy custom Apache configuration
-COPY \apache.conf
+COPY apache.conf
 
 # Enable Apache modules
 RUN a2enmod rewrite
