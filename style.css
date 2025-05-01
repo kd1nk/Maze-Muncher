@@ -17,7 +17,7 @@ html, body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   overflow: hidden; /* Hide content that overflows the container */
   background: url('assets/Menu/Cornfield.webp') no-repeat center center/cover;
 }
@@ -102,20 +102,34 @@ html, body {
 
 /* Keyframe animations */
 @keyframes slideIn {
-  from { transform: translateY(-50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes floatUp {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 body.game-screen {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Use full screen height */
+  height: 100vh;
+  /* Use full screen height */
   background-color: black;
   margin: 0;
 }
@@ -161,11 +175,13 @@ canvas {
 .leaderboard-container {
   width: 100%;
   text-align: center;
-  margin-top: 2rem; /* Increased margin-top for better spacing */
+  margin-top: 2rem;
+  /* Increased margin-top for better spacing */
 }
 
 .leaderboard-title {
-  font-size: 3.5rem; /* Increased font size */
+  font-size: 3.5rem;
+  /* Increased font size */
   color: #6b4226;
   font-family: 'Lobster', cursive;
   margin-bottom: 1rem;
@@ -174,13 +190,17 @@ canvas {
 
 #leaderboardList {
   margin: 0 auto;
-  width: 95%; /* Increased width of the list */
-  max-width: 700px; /* Increased max-width */
+  width: 95%;
+  /* Increased width of the list */
+  max-width: 700px;
+  /* Increased max-width */
   padding: 0;
   list-style: none;
   background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 15px; /* Increased border-radius */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+  border-radius: 15px;
+  /* Increased border-radius */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  /* Slightly stronger shadow */
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -188,17 +208,21 @@ canvas {
 #leaderboardList li {
   padding: 1rem;
   text-align: center;
-  border-bottom: 2px solid #deb887; /* Thicker border */
-  font-size: 1.2rem; /* Increased font size */
+  border-bottom: 2px solid #deb887;
+  /* Thicker border */
+  font-size: 1.2rem;
+  /* Increased font size */
   color: #6b4226;
   display: flex;
-  justify-content: space-between; /* Improved spacing of elements */
+  justify-content: space-between;
+  /* Improved spacing of elements */
   align-items: center;
   box-sizing: border-box;
 }
 
 #leaderboardList li:nth-child(odd) {
-   background-color: rgba(255, 248, 220, 0.5);  /* Apply background to odd rows */
+  background-color: rgba(255, 248, 220, 0.5);
+  /* Apply background to odd rows */
 }
 
 #leaderboardList li:last-child {
@@ -207,16 +231,21 @@ canvas {
 
 #leaderboardList li span:first-child {
   font-weight: bold;
-  margin-right: 1rem; /* Increased margin */
-  font-size: 1.3rem; /* Increased font size */
+  margin-right: 1rem;
+  /* Increased margin */
+  font-size: 1.3rem;
+  /* Increased font size */
 }
 
 .back-button {
   display: block;
   width: 100%;
-  max-width: 250px; /* Increased max-width */
-  padding: 1.2rem; /* Increased padding */
-  margin: 1.5rem auto; /* Increased margin */
+  max-width: 250px;
+  /* Increased max-width */
+  padding: 1.2rem;
+  /* Increased padding */
+  margin: 1.5rem auto;
+  /* Increased margin */
   border: none;
   border-radius: 12px;
   background: linear-gradient(90deg, #A65E00, #E69F00);
@@ -229,8 +258,10 @@ canvas {
 }
 
 .back-button:hover {
-  transform: translateY(-8px); /* Increased transform */
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25); /* Increased shadow */
+  transform: translateY(-8px);
+  /* Increased transform */
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+  /* Increased shadow */
   background: linear-gradient(90deg, #ffcc33, #ffa347);
 }
 
@@ -239,8 +270,10 @@ canvas {
 }
 
 .leaderboard-empty-message {
-  padding: 1.5rem; /* Increased padding */
-  font-size: 1.4rem; /* Increased font size */
+  padding: 1.5rem;
+  /* Increased padding */
+  font-size: 1.4rem;
+  /* Increased font size */
   color: #6b4226;
   text-align: center;
 }
@@ -250,4 +283,93 @@ canvas {
   font-size: 1.5rem;
   color: #6b4226;
   font-family: 'Lobster', cursive;
+}
+
+/* New styles from HTML (inline styles) */
+
+/* Add CSS for the sprite display area */
+#spriteDisplayArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 200px;
+  /* Adjust as needed */
+  height: 200px;
+  /* Adjust as needed */
+  border: 2px solid #ccc;
+  /* Optional border */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#spriteDisplayArea img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.hat-selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hat-selection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.hat-selection button {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  /* Ensure buttons have some width */
+}
+
+.hat-sprite {
+  width: 50px;
+  /* Adjust as needed */
+  height: 50px;
+  /* Adjust as needed */
+  margin-bottom: 5px;
+  /* Space between hat sprite and text */
+}
+
+/* Style for the back button in the top right */
+#customizationScreen>button[onclick="goBack()"] {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-top: 0;
+  /* Reset default margin-top */
+  margin-left: auto;
+  display: block;
+  width: auto;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #A65E00, #E69F00);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  font-family: 'Chewy', cursive;
+}
+
+#customizationScreen>button[onclick="goBack()"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #ffcc33, #ffa347);
+}
+
+#customizationScreen .tab {
+  position: relative;
+  /* Needed for absolute positioning of the back button within */
+  padding-bottom: 60px;
+  /* Add some padding at the bottom to prevent overlap with other elements if needed */
 }

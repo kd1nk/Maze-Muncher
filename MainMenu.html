@@ -19,14 +19,12 @@
             <button onclick="showCustomization()">Player Customization</button>
             <button onclick="exitGame()">Exit Game</button>
         </div>
-
         <div id="settingsScreen" class="menu" style="display: none;">
             <h1>Settings</h1>
             <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
             <button onclick="accessibilityMenu()">Accessibility Options</button>
             <button onclick="goBack()">Back to Main Menu</button>
         </div>
-
         <div id="accessibilityScreen" class="menu" style="display: none;">
             <h1>Accessibility Options</h1>
             <button onclick="setColorBlindMode('normal')">Normal</button>
@@ -35,7 +33,6 @@
             <button onclick="setColorBlindMode('tritanopia')">Tritanopia</button>
             <button onclick="goBack()">Back</button>
         </div>
-
         <div id="volumeScreen" class="menu" style="display: none;">
             <h1>Volume</h1>
             <label>Menu Music: <input id="menuMusicSlider" type="range" min="0" max="1" step="0.01"></label>
@@ -43,7 +40,6 @@
             <label>Sound Effects:        <input id="sfxSlider"       type="range" min="0" max="1" step="0.01"></label>
             <button onclick="goBack()">Back to Main Menu</button>
         </div>
-        
         <div id="leaderboardScreen" class="menu" style="display: none;">
             <h1>Leaderboard</h1>
             <ul id="leaderboardList">
@@ -53,31 +49,42 @@
                 <p>Eat More Corn!</p>
             </div>
         </div>
-
-
         <div id="levelSelectScreen" class="menu" style="display: none;">
             <h2>Select a Level</h2>
             <div id="levelButtonsContainer">
         </div>
         <button onclick="goBack()">Back to Main Menu</button>
         </div>
-
         <div id="customizationScreen" class="menu" style="display: none;">
             <h1>Player Customization</h1>
-            <button class="tab-button" onclick="openTab('hats')">Hats</button>
-            <button class="tab-button" onclick="openTab('outfits')">Outfits</button>
             <div id="hats" class="tab active">
                 <h3>Hats</h3>
                 <p>Choose a hat for your player.</p>
+                <div id="spriteDisplayArea">
+                    <img id="playerSprite" src="assets/Farm boy-0.png" alt="Player Model">
                 </div>
-            <div id="outfits" class="tab">
-                <h3>Outfits</h3>
-                <p>Choose an outfit for your player.</p>
+                <div class="hat-selection-container">
+                    <div class="hat-selection">
+                        <button data-hat="none">
+                            Default
+                        </button>
+                        <button data-hat="mario">
+                            Mario
+                        </button>
+                        <button data-hat="mushroom">
+                            Mushroom
+                        </button>
+                        <button data-hat="pig">
+                            Pig
+                        </button>
+                        <button data-hat="tophat">
+                            Top Hat
+                        </button>
+                    </div>
                 </div>
-
+            </div>
             <button onclick="goBack()">Back to Main Menu</button>
         </div>
-
         <div class="fence"></div>
     </div>
     <script src="mainMenu.js"></script>
