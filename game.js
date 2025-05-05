@@ -55,6 +55,8 @@ class Pacman extends Phaser.Scene {
       { key: "map2", tileset: "map2" },
       { key: "map3", tileset: "map3" }
     ];
+
+
     
   }
 
@@ -134,7 +136,7 @@ class Pacman extends Phaser.Scene {
     const layer = this.map.createLayer("Tile Layer 1", tileset);
     layer.setCollisionByExclusion(-1, true);
     // Create the player character and enable physics
-    this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
+    this.pacman = this.physics.add.sprite(230, 432);
     //Create the inventory system...
     this.pacman.powerUp = null;
 
@@ -145,12 +147,54 @@ class Pacman extends Phaser.Scene {
       }
     };
 
-    // Create animations and sprites for the character.
-    LoadAnims.loadBaseAnims(this);
-    LoadAnims.loadSheepAnims(this);
 
-    // Create the character's death animation.
-    LoadAnims.loadBaseDeathAnims(this);
+    const selectedHat = localStorage.getItem('selectedHat') || 'none';
+    // Select corect animation based on selected hat
+    switch (selectedHat) {
+      case "mario":
+        LoadAnims.loadMarioAnims(this);
+        LoadAnims.loadMarioDeathAnims(this);
+        this.lifeCounter1 = this.add.image(32, 32, "Mario1");
+        this.lifeCounter2 = this.add.image(56, 32, "Mario1");
+        this.pacman = this.physics.add.sprite(230, 432, "Mario1");
+        break;
+    
+      case "mushroom":
+        LoadAnims.loadMushroomAnims(this);
+        LoadAnims.loadMushroomDeathAnims(this);
+        this.lifeCounter1 = this.add.image(32, 32, "Mushroom1");
+        this.lifeCounter2 = this.add.image(56, 32, "Mushroom1");
+        this.pacman = this.physics.add.sprite(230, 432, "Mushroom1");
+        break;
+    
+      case "pig":
+        LoadAnims.loadPigAnims(this);
+        LoadAnims.loadPigDeathAnims(this);
+        this.lifeCounter1 = this.add.image(32, 32, "Pig Boy1");
+        this.lifeCounter2 = this.add.image(56, 32, "Pig Boy1");
+        this.pacman = this.physics.add.sprite(230, 432, "Pig Boy1");
+        break;
+    
+      case "tophat":
+        LoadAnims.loadTopHatAnims(this);
+        LoadAnims.loadTopHatDeathAnims(this);
+        this.lifeCounter1 = this.add.image(32, 32, "Top Hat1");
+        this.lifeCounter2 = this.add.image(56, 32, "Top Hat1");
+        this.pacman = this.physics.add.sprite(230, 432, "Top Hat1");
+        break;
+    
+      case "none":
+      default:
+        LoadAnims.loadBaseAnims(this);
+        LoadAnims.loadBaseDeathAnims(this);
+        this.lifeCounter1 = this.add.image(32, 32, "Farm boy0");
+        this.lifeCounter2 = this.add.image(56, 32, "Farm boy0");
+        this.pacman = this.physics.add.sprite(230, 432, "Farm boy0");
+        break;
+    }
+    
+
+    LoadAnims.loadSheepAnims(this);
 
 
     // Create the enemies and set their properties.
@@ -196,8 +240,7 @@ class Pacman extends Phaser.Scene {
     this.ghosts.forEach(ghost => {
       this.physics.add.overlap(this.pacman, ghost, EnemyDeath.handlePacmanGhostCollision, null, this);
     });
-    this.lifeCounter1 = this.add.image(32, 32, "Farm boy0");
-    this.lifeCounter2 = this.add.image(56, 32, "Farm boy0");
+
 
     //SCORE TRACKER
     this.score = 0;

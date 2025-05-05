@@ -1,5 +1,6 @@
 import { resetGhosts } from "./enemyDeath.js";
 import { createStartCountdown, endGame } from "./gameScreens.js"; 
+const selectedHat = localStorage.getItem('selectedHat') || 'none';
 
 
 /**
@@ -18,8 +19,29 @@ export function pacmanDies() {
     this.isPacmanAlive = false;
     this.pacman.anims.stop();
 
-    // Play the death animation (farmBoyDeath) with immediate start.
-    this.pacman.play("farmBoyDeath", true);
+ // Select corect animation based on selected hat
+    switch (selectedHat) {
+      case "mario":
+        this.pacman.play("marioDeath", true);
+        break;
+    
+      case "mushroom":
+        this.pacman.play("mushroomDeath", true);
+        break;
+    
+      case "pig":
+        this.pacman.play("pigBoyDeath", true);
+        break;
+    
+      case "tophat":
+        this.pacman.play("topHatDeath", true);
+        break;
+    
+      case "none":
+      default:
+      this.pacman.play("farmBoyDeath", true);
+        break;
+    }
 
       // Play death sound ONLY here
   if (this.deathSfx && this.sound) {

@@ -22,7 +22,7 @@ function initializeMenuMusic() {
 
 window.addEventListener('DOMContentLoaded', () => {
     initializeMenuMusic();
-    setupHatSelection();
+
 });
 
 window.addEventListener('beforeunload', () => {
@@ -150,11 +150,11 @@ function showCustomization() {
     openTab('hats');
 }
 
-function setupHatSelection() {
-    const playerSprite = document.getElementById('playerSprite');
-    const hatButtons = document.querySelectorAll('.hat-selection button');
 
-    const updatePlayerSprite = (hatType) => {
+    function setupHatSelection() {
+        const playerSprite = document.getElementById('playerSprite');
+        const hatButtons = document.querySelectorAll('.hat-selection button');
+    
         const imagePaths = {
             none: 'assets/Farm boy/Farm Boy/Farm boy-0.png',
             mario: 'assets/Farm boy/Farm Boy Mario/fb-mario-1.png',
@@ -162,19 +162,26 @@ function setupHatSelection() {
             pig: 'assets/Farm boy/Pig Boy/fb-pig-1.png',
             tophat: 'assets/Farm boy/Farm Boy Top Hat/fb-tophat-1.png',
         };
-        playerSprite.src = imagePaths[hatType] || imagePaths.none;
-        localStorage.setItem('selectedHat', hatType);
-    };
-
-    hatButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            updatePlayerSprite(button.dataset.hat);
+    
+        const updatePlayerSprite = (hatType) => {
+            playerSprite.src = imagePaths[hatType] || imagePaths.none;
+            localStorage.setItem('selectedHat', hatType);
+            selectedHat = hatType; 
+        };
+    
+        let selectedHat = localStorage.getItem('selectedHat') || 'none';
+        updatePlayerSprite(selectedHat); // preload it visually
+    
+        hatButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                updatePlayerSprite(button.dataset.hat);
+            });
         });
-    });
+    
+        return selectedHat; 
+    }
+    
 
-    const savedHat = localStorage.getItem('selectedHat');
-    if (savedHat) updatePlayerSprite(savedHat);
-}
 
 function showLevelSelectMenu() {
     hideAllScreens();
@@ -219,4 +226,3 @@ Object.assign(window, {
     goBack, viewLeaderboard, exitGame, updateLeaderboardDisplay,
     updateLeaderboard, showLevelSelectMenu, showCustomization, openTab, hideAllScreens
 });
-
