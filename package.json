@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "jest",
-    "cypress:open": "cypress open",
+    "cypress:open": "cypress open"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
