@@ -22,7 +22,6 @@ function initializeMenuMusic() {
 
 window.addEventListener('DOMContentLoaded', () => {
     initializeMenuMusic();
-
 });
 
 window.addEventListener('beforeunload', () => {
@@ -41,7 +40,7 @@ function startGame() {
     window.location.href = 'game.html';
 }
 
-let previousScreen = "mainMenu";
+let previousScreen = "MainMenu.html";
 
 function hideAllScreens() {
     document.querySelectorAll('.menu').forEach(screen => {
@@ -100,15 +99,13 @@ function setColorBlindMode(type) {
 }
 
 function goBack() {
-    hideAllScreens();
-    document.getElementById(previousScreen).style.display = "block";
-
-    if (previousScreen === "mainMenu") {
-        document.getElementById("mainMenu").style.display = "block";
-    } else if (previousScreen === "settingsScreen") {
-        document.getElementById("settingsScreen").style.display = "block";
+    if (previousScreen.endsWith('.html')) {
+        // Navigate to another HTML file
+        window.location.href = previousScreen;
     } else {
-        previousScreen = "mainMenu";
+        // Show the previous screen in the current document
+        hideAllScreens();
+        document.getElementById(previousScreen).style.display = "block";
     }
 }
 
@@ -146,42 +143,37 @@ function updateLeaderboard(playerName, score) {
 function showCustomization() {
     hideAllScreens();
     document.getElementById("customizationScreen").style.display = "block";
-    previousScreen = "customizationScreen";
+    previousScreen = "MainMenu.html"; // Update for navigation
     openTab('hats');
+    setupHatSelection();
 }
 
+function setupHatSelection() {
+    const playerSprite = document.getElementById('playerSprite');
+    const hatButtons = document.querySelectorAll('.hat-selection button');
 
-    function setupHatSelection() {
-        const playerSprite = document.getElementById('playerSprite');
-        const hatButtons = document.querySelectorAll('.hat-selection button');
-    
-        const imagePaths = {
-            none: 'assets/Farm boy/Farm Boy/Farm boy-0.png',
-            mario: 'assets/Farm boy/Farm Boy Mario/fb-mario-1.png',
-            mushroom: 'assets/Farm boy/Farm Boy Mushroom/fb-mushroom-1.png',
-            pig: 'assets/Farm boy/Pig Boy/fb-pig-1.png',
-            tophat: 'assets/Farm boy/Farm Boy Top Hat/fb-tophat-1.png',
-        };
-    
-        const updatePlayerSprite = (hatType) => {
-            playerSprite.src = imagePaths[hatType] || imagePaths.none;
-            localStorage.setItem('selectedHat', hatType);
-            selectedHat = hatType; 
-        };
-    
-        let selectedHat = localStorage.getItem('selectedHat') || 'none';
-        updatePlayerSprite(selectedHat); // preload it visually
-    
-        hatButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                updatePlayerSprite(button.dataset.hat);
-            });
+    const imagePaths = {
+        none: 'assets/Farm boy/Farm Boy/Farm boy-0.png',
+        mario: 'assets/Farm boy/Farm Boy Mario/fb-mario-1.png',
+        mushroom: 'assets/Farm boy/Farm Boy Mushroom/fb-mushroom-1.png',
+        pig: 'assets/Farm boy/Pig Boy/fb-pig-1.png',
+        tophat: 'assets/Farm boy/Farm Boy Top Hat/fb-tophat-1.png',
+    };
+
+    const updatePlayerSprite = (hatType) => {
+        playerSprite.src = imagePaths[hatType] || imagePaths.none;
+        localStorage.setItem('selectedHat', hatType);
+    };
+
+    let selectedHat = localStorage.getItem('selectedHat') || 'none';
+    updatePlayerSprite(selectedHat); // Preload visually
+
+    hatButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            updatePlayerSprite(button.dataset.hat);
         });
-    
-        return selectedHat; 
-    }
-    
-
+    });
+}
 
 function showLevelSelectMenu() {
     hideAllScreens();
@@ -226,3 +218,4 @@ Object.assign(window, {
     goBack, viewLeaderboard, exitGame, updateLeaderboardDisplay,
     updateLeaderboard, showLevelSelectMenu, showCustomization, openTab, hideAllScreens
 });
+
