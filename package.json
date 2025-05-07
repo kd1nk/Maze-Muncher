@@ -5,7 +5,6 @@
   "scripts": {
     "test": "jest",
     "cypress:open": "cypress open",
-    "build": "npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
